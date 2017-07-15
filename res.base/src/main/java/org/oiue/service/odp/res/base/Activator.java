@@ -13,56 +13,66 @@ import org.oiue.service.odp.objpool.BmoConfig;
 import org.oiue.service.odp.res.api.IResource;
 import org.oiue.service.osgi.FrameActivator;
 import org.oiue.service.osgi.MulitServiceTrackerCustomizer;
+import org.oiue.service.system.analyzer.AnalyzerService;
 import org.oiue.tools.string.StringUtil;
 
 public class Activator extends FrameActivator {
 
-    @Override
-    public void start() throws Exception {
-        this.start(new MulitServiceTrackerCustomizer() {
-            ResourceImpl res;
-            Logger logger;
-            @Override
-            public void removedService() {}
+	@Override
+	public void start() throws Exception {
+		this.start(new MulitServiceTrackerCustomizer() {
+			ResourceImpl res;
+			Logger logger;
 
-            @Override
-            public void addingService() {
-                LogService logService = getService(LogService.class);
-                logger = logService.getLogger(this.getClass());
-                res = new ResourceImpl(logService);
-            }
+			@Override
+			public void removedService() {
+			}
 
-            @SuppressWarnings({ "rawtypes", "unchecked" })
-            @Override
-            public void updated(Dictionary<String, ?> props) {
-                res.updated(props);
+			@Override
+			public void addingService() {
+				LogService logService = getService(LogService.class);
+				AnalyzerService analyzerService = getService(AnalyzerService.class);
+				logger = logService.getLogger(this.getClass());
+				res = new ResourceImpl(logService, analyzerService);
+			}
 
-                String conn_names = (String) props.get("connNames");
-                if (!StringUtil.isEmptys(conn_names)) {
-                    String[] conn_name = conn_names.split(",");
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			@Override
+			public void updated(Dictionary<String, ?> props) {
+				res.updated(props);
 
-                    List<String> conns = Arrays.asList(conn_name);
+				try {
+					String conn_names = (String) props.get("connNames");
+					if (!StringUtil.isEmptys(conn_names)) {
+						String[] conn_name = conn_names.split(",");
 
-                    FactoryService factoryService = getService(FactoryService.class);
+						List<String> conns = Arrays.asList(conn_name);
 
-                    Map method_iRes = new HashMap();
-                    method_iRes.put("default", conns);
-                    BmoConfig bc_iRes = new BmoConfig(res, method_iRes);
-                    factoryService.registerBmo(IResource.class.getName(), bc_iRes);
+						FactoryService factoryService = getService(FactoryService.class);
 
-                    try {
-                        registerService(IResource.class, factoryService.getBmo(IResource.class.getName()));
-                        logger.info("register service:" + IResource.class);
-                    } catch (Throwable e) {
-                        logger.error("register service error:" + e.getMessage(), e);
-                    }
-                } else {
+						Map method_iRes = new HashMap();
+						method_iRes.put("default", conns);
+						BmoConfig bc_iRes = new BmoConfig(res, method_iRes);
+						factoryService.registerBmo(IResource.class.getName(), bc_iRes);
 
-                }
-            }
-        }, LogService.class, FactoryService.class);
-    }
+						try {
+							registerService(IResource.class, factoryService.getBmo(IResource.class.getName()));
+							logger.info("register service:" + IResource.class);
+						} catch (Throwable e) {
+							logger.error("register service error:" + e.getMessage(), e);
+						}
+					} else {
 
-    @Override
-    public void stop() throws Exception {}
+					}
+
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
+			}
+		}, LogService.class, AnalyzerService.class, FactoryService.class);
+	}
+
+	@Override
+	public void stop() throws Exception {
+	}
 }

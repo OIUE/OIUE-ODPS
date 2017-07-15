@@ -3,7 +3,8 @@ package org.oiue.service.odp.event.dmo.neo4j;
 import java.util.List;
 import java.util.Map;
 
-import org.oiue.service.odp.dmo.neo4j.DMO;
+import org.oiue.service.odp.dmo.DMO;
+import org.oiue.service.odp.dmo.IDMO;
 import org.oiue.service.odp.event.api.EventConvertService;
 
 @SuppressWarnings("serial")
@@ -17,4 +18,11 @@ public class EventConvertServiceImpl extends DMO implements EventConvertService 
 	public Map<?, ?> query(Map<?, ?> event_query) throws Throwable {
 		return null;
 	}
+
+	@Override
+	public IDMO clone() throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		return new EventConvertServiceImpl();
+	}
+
 }

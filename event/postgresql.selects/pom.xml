@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.oiue.services.odps.events</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 	</parent>
 	<packaging>bundle</packaging>
 	<name>OIUE EVENT service for selects for postgresql </name>
@@ -14,12 +14,12 @@
 		<dependency>
 			<groupId>org.oiue.services.odps</groupId>
 			<artifactId>org.oiue.service.odp.res.dmo</artifactId>
-			<version>1.0.0</version>
+			<version>${odp.res.dmo.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.oiue.services.odps</groupId>
 			<artifactId>org.oiue.service.odp.dmo.mysql</artifactId>
-			<version>1.0.0</version>
+			<version>${odp.dmo.mysql.version}</version>
 		</dependency>
 	</dependencies>
 	<properties>

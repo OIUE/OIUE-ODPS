@@ -4,10 +4,10 @@
 	<parent>
 		<groupId>org.oiue.services.odps.events</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 	</parent>
 	<packaging>bundle</packaging>
-	<name>OIUE EVENT service for dmo mysql </name>
+	<name>OIUE EVENT service for dmo mysql t </name>
 	<description>A bundle that leauto event dmo mysql service impl</description>
 	<properties>
 		<project.activator>${artifactId}.Activator</project.activator>

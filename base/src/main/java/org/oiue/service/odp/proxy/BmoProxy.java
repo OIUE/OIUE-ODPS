@@ -32,7 +32,7 @@ public class BmoProxy implements InvocationHandler {
 
     /**
      * 
-     * @param object
+     * @param object 业务对象
      * @param name 业务类对象名
      */
     public BmoProxy(IBMO object, String name) {
@@ -54,7 +54,7 @@ public class BmoProxy implements InvocationHandler {
      * 
      * 业务方法代理 大多数业务中涉及到事务处理， 此处代理业务方法的事务处理，解决单一业务，多业务的事务管理，事务嵌套管理 在此处考虑多连接，嵌套事务的松耦合处理 目前暂未实现事务嵌套处理，
      * 
-     * @2010-11-16
+     * @ 2010-11-16
      */
     @SuppressWarnings("rawtypes")
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {

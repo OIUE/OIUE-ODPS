@@ -5,11 +5,14 @@
 	<parent>
 		<groupId>org.oiue.services.odps</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 	</parent>
 	<packaging>bundle</packaging>
 
 	<name>OIUE ODP service for dmo h2  </name>
 	<description>A bundle that dmo h2 service impl </description>
+	<properties>
+		<project.activator>${artifactId}.Activator</project.activator>
+	</properties>
 
 </project>

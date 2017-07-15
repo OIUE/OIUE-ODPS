@@ -1,54 +1,10 @@
-<!-- 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.wmw.tools</groupId>
-	<artifactId>com.wmw.tools.frame.res.dmo.h2</artifactId>
-	<version>1.0.0</version>
-	<parent>
-		<groupId>com.leauto</groupId>
-		<artifactId>leauto-parent</artifactId>
-		<version>1.0.1</version>
-	</parent>
-	<packaging>bundle</packaging>
-
-	<name>WMW service for res H2 dmo </name>
-	<description>WMW service for res H2 dmo</description>
-	<url>http://maven.apache.org</url>
-
-	<dependencies>
-		<dependency>
-			<groupId>com.wmw.tools</groupId>
-			<artifactId>com.wmw.tools.frame</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.wmw.tools</groupId>
-			<artifactId>com.wmw.tools.frame.res.dmo</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-	</dependencies>
-	<properties>
-		<project.activator>${artifactId}.Activator</project.activator>
-	</properties>
-	<build>
-		<plugins>
-			<!~~ 打包bundle文件为bundle.jar文件 <plugin> <groupId>org.apache.felix</groupId> <artifactId>maven-bundle-plugin</artifactId> <extensions>true</extensions> <configuration> <instructions> <X-bundle-Version>${project.version}</X-bundle-Version> <Bundle-Name>${project.name}</Bundle-Name> <Bundle-ManifestVersion>2</Bundle-ManifestVersion> <Bundle-Description>${project.description}</Bundle-Description> <Bundle-Vendor></Bundle-Vendor> 
-				</instructions> </configuration> </plugin> ~~>
-			<!~~ 将打包的bundle文件拷贝到项目的bundle目录 ~~>
-			<!~~ <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-antrun-plugin</artifactId> <executions> <execution> <id>copy-lib-bundle</id> <phase>package</phase> <goals> <goal>run</goal> </goals> <configuration> <tasks> <copy todir="/workspace/git/platform/leauto/bundle"> <fileset dir="${project.basedir}/target"> <include name="*.?.jar" /> </fileset> </copy> </tasks> </configuration> 
-				</execution> </executions> </plugin> ~~>
-		</plugins>
-	</build>
-</project>
- -->
  <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.oiue.service.odp.res.dmo.neo4j</artifactId>
 	<parent>
 		<groupId>org.oiue.services.odps</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0.0</version>
-		<relativePath>../parent/pom.xml</relativePath>
+		<version>1.0.1</version>
 	</parent>
 	<packaging>bundle</packaging>
 
@@ -59,12 +15,12 @@
 		<dependency>
 			<groupId>org.oiue.services.odps</groupId>
 			<artifactId>org.oiue.service.odp.res.dmo</artifactId>
-			<version>1.0.0</version>
+			<version>${odp.res.dmo.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.oiue.services.odps</groupId>
 			<artifactId>org.oiue.service.odp.dmo.h2</artifactId>
-			<version>1.0.0</version>
+			<version>${odp.dmo.h2.version}</version>
 		</dependency>
 	</dependencies>
 	<properties>

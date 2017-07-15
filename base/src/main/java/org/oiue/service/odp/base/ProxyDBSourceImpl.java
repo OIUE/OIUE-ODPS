@@ -26,12 +26,7 @@ public class ProxyDBSourceImpl implements ProxyDBSource{
 		logger=logService.getLogger(this.getClass());
 	}
 	
-	/**
-	 * 根据连接名称获取连接
-	 * @param dbName
-	 * @return
-	 * @throws Throwable
-	 */
+	@Override
 	public Connection getConn(String dbName) throws Throwable{
 		return sqlService.getConnection(dbName);
 	}

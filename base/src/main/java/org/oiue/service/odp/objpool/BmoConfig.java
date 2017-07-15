@@ -28,10 +28,8 @@ public class BmoConfig implements Serializable {
 	/**
 	 * 初始化业务Bean
 	 * 
-	 * @param name
-	 *            映射名称
-	 * @param classPath
-	 *            类路径
+	 * @param bmo
+	 *            业务对象
 	 * @param method
 	 *            方法与连接名称的对应
 	 */
@@ -54,9 +52,9 @@ public class BmoConfig implements Serializable {
 
 	/**
 	 * 获取类对象实例（这是一个全新的实例）
-	 * 
-	 * @return
-	 * @throws Throwable
+	 * @param o 参数集合
+	 * @return 业务对象
+	 * @throws Throwable 获取失败
 	 */
 	public IBMO getClasses(Object... o) throws Throwable {
 		Class newoneClass = bmo.getClass();

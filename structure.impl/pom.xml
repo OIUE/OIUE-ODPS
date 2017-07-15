@@ -10,14 +10,14 @@
 	<parent>
 		<groupId>org.oiue.services.odps</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.oiue.services.odps</groupId>
 			<artifactId>org.oiue.service.odp.structure</artifactId>
-			<version>1.0.0</version>
+			<version>${odp.structure.version}</version>
 		</dependency>
 	</dependencies>
 	<properties>

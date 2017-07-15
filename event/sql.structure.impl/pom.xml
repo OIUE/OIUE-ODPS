@@ -10,19 +10,19 @@
 	<parent>
 		<groupId>org.oiue.services.odps.events</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.oiue.services.odps.events</groupId>
 			<artifactId>org.oiue.service.odp.event.sql.structure</artifactId>
-			<version>1.0.0</version>
+			<version>${odp.event.sql.structure.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.oiue.services.odps.events</groupId>
 			<artifactId>org.oiue.service.odp.event.api</artifactId>
-			<version>1.0.0</version>
+			<version>${odp.event.api.version}</version>
 		</dependency>
 	</dependencies>
 	<properties>

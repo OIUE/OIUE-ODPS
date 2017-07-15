@@ -22,22 +22,15 @@ import java.sql.Types;
  */
 @SuppressWarnings("serial")
 public class ClobType implements Serializable {
-	// private transient Logger logger = Logger.getLogger(ClobType.class);
-
-	public ClobType() {
-	}
 
 	/**
 	 * 
 	 * 给statement设置clob类型参数
 	 * 
-	 * @param st
-	 *            PreparedStatement
-	 * @param obj
-	 *            Object
-	 * @param index
-	 *            int
-	 * @throws SQLException
+	 * @param st PreparedStatement
+	 * @param obj Object
+	 * @param index int
+	 * @throws SQLException 设置异常
 	 * @author 孙天策
 	 */
 	public void set(PreparedStatement st, Object obj, int index) throws SQLException {
@@ -62,7 +55,7 @@ public class ClobType implements Serializable {
 	 * @param name
 	 *            String
 	 * @return Clob
-	 * @throws SQLException
+	 * @throws SQLException 获取异常
 	 * @author 孙天策
 	 */
 	public Clob get(ResultSet rs, String name) throws SQLException {
@@ -78,7 +71,7 @@ public class ClobType implements Serializable {
 	 * @param index
 	 *            int
 	 * @return Clob
-	 * @throws SQLException
+	 * @throws SQLException 获取
 	 * @author 孙天策
 	 */
 	public Clob get(ResultSet rs, int index) throws SQLException {

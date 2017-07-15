@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.oiue.services</groupId>
 		<artifactId>services</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 	</parent>
 	<artifactId>odps</artifactId>
   <packaging>pom</packaging>
@@ -14,28 +14,29 @@
   <modules>
     <module>base</module>
     <module>parent</module>
+    <module>res.dmo</module>
+    
+    <module>dmo.mysql</module>
+    <module>dmo.postgresql</module>
+    <module>dmo.h2</module>
+    <module>dmo.neo4j</module>
+    <module>event</module>
+    
+    <module>res.dmo.mysql</module>
+    
+    <module>res.dmo.postgresql</module>
+    
+    <module>res.dmo.h2</module>
+    
+    <module>res.dmo.neo4j</module>
+    
     <module>structure</module>
     <module>structure.impl</module>
     <module>structure.selectsql</module>
     
-    <module>dmo.neo4j</module>
-    
-    <module>dmo.mysql</module>
-    <module>res.dmo</module>
-    <module>res.dmo.mysql</module>
-    
-    <module>dmo.postgresql</module>
-    <!-- <module>res.dmo.postgresql</module> -->
-    
-    <module>event</module>
-    
     <module>res.api</module>
     <module>res.base</module>
     
-    <module>merge.api</module>
-    
-    <module>dmo.h2</module>
-    <module>res.dmo.h2</module>
-    <module>res.dmo.neo4j</module>
+    <module>res.event.resultfilter.conver2tree</module>
   </modules>
 </project>

@@ -39,7 +39,7 @@ public class BlobType implements Serializable {
 	 *            Object
 	 * @param index
 	 *            int
-	 * @throws Exception
+	 * @throws Exception 设置异常
 	 * @author 孙天策
 	 */
 	public void set(PreparedStatement st, Object obj, int index) throws Exception {
@@ -67,7 +67,7 @@ public class BlobType implements Serializable {
 	 * @param name
 	 *            String
 	 * @return Blob
-	 * @throws SQLException
+	 * @throws SQLException 获取异常
 	 * @author 孙天策
 	 */
 	public Blob get(ResultSet rs, String name) throws SQLException {
@@ -83,7 +83,7 @@ public class BlobType implements Serializable {
 	 * @param index
 	 *            int
 	 * @return Blob
-	 * @throws SQLException
+	 * @throws SQLException 获取数据异常
 	 * @author 孙天策
 	 */
 	public Blob get(ResultSet rs, int index) throws SQLException {

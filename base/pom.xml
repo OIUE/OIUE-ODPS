@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>org.oiue.services</groupId>
 		<artifactId>imports</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 	</parent>
 	<properties>
 		<project.activator>${artifactId}.Activator</project.activator>
@@ -34,7 +34,7 @@ org.oiue.service.odp.objpool</project.export>
 		<dependency>
 			<groupId>org.oiue.services</groupId>
 			<artifactId>org.oiue.service.sql</artifactId>
-			<version>1.0.0</version>
+			<version>${sql.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>

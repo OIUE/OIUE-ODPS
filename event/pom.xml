@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.oiue.services.odps</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 	</parent>
 	<groupId>org.oiue.services.odps</groupId>
 	<artifactId>events</artifactId>
@@ -24,10 +24,13 @@
     <module>mysql.q</module>
     <module>mysql.select</module>
     <module>mysql.selects</module>
+    <module>mysql.selectsTree</module>
+    <module>mysql.call</module>
     
     <module>postgresql</module>
     <module>postgresql.q</module>
     <module>postgresql.query</module>
+    <module>postgresql.select</module>
     <module>postgresql.selects</module>
     
     <module>neo4j</module>
