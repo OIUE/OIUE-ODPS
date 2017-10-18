@@ -1,38 +1,37 @@
-package org.oiue.service.odp.event.sql.structure.impl;
+package org.oiue.service.odp.sqlBuilder.base;
 
 import java.util.Dictionary;
 
-import org.oiue.service.cache.CacheServiceManager;
 import org.oiue.service.log.LogService;
-import org.oiue.service.odp.event.sql.structure.StructureService;
+import org.oiue.service.odp.base.FactoryService;
 import org.oiue.service.osgi.FrameActivator;
 import org.oiue.service.osgi.MulitServiceTrackerCustomizer;
-import org.oiue.service.system.analyzer.AnalyzerService;
+import org.oiue.service.sql.SqlService;
 
 public class Activator extends FrameActivator {
 
 	@Override
 	public void start() throws Exception {
 		this.start(new MulitServiceTrackerCustomizer() {
+			private FactoryService factoryService;
+
 			@Override
 			public void removedService() {}
 
+			@SuppressWarnings("unused")
 			@Override
 			public void addingService() {
 				LogService logService = getService(LogService.class);
-				AnalyzerService analyzerService = getService(AnalyzerService.class);
-				CacheServiceManager cacheService = getService(CacheServiceManager.class);
+				SqlService sqlService = getService(SqlService.class);
 
-				StructureService structureService = new StructureServiceManagerImpl(logService, analyzerService,cacheService);
-
-				registerService(StructureService.class, structureService);
+				registerService(FactoryService.class, factoryService);
 			}
 
 			@Override
 			public void updated(Dictionary<String, ?> props) {
 
 			}
-		}, LogService.class, AnalyzerService.class,CacheServiceManager.class);
+		}, LogService.class, SqlService.class);
 	}
 
 	@Override

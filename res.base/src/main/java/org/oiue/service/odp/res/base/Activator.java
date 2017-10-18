@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.oiue.service.cache.CacheServiceManager;
 import org.oiue.service.log.LogService;
 import org.oiue.service.log.Logger;
 import org.oiue.service.odp.base.FactoryService;
@@ -32,8 +33,9 @@ public class Activator extends FrameActivator {
 			public void addingService() {
 				LogService logService = getService(LogService.class);
 				AnalyzerService analyzerService = getService(AnalyzerService.class);
+				CacheServiceManager cacheService = getService(CacheServiceManager.class);
 				logger = logService.getLogger(this.getClass());
-				res = new ResourceImpl(logService, analyzerService);
+				res = new ResourceImpl(logService, analyzerService,cacheService);
 			}
 
 			@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -69,7 +71,7 @@ public class Activator extends FrameActivator {
 					e.printStackTrace();
 				}
 			}
-		}, LogService.class, AnalyzerService.class, FactoryService.class);
+		}, LogService.class, AnalyzerService.class, FactoryService.class,CacheServiceManager.class);
 	}
 
 	@Override

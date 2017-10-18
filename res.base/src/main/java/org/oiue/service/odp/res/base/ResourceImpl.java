@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.oiue.service.cache.CacheServiceManager;
+import org.oiue.service.cache.Type;
 import org.oiue.service.log.LogService;
 import org.oiue.service.log.Logger;
 import org.oiue.service.odp.bmo.BMO;
@@ -27,6 +29,7 @@ import org.oiue.table.structure.StructureTable;
 import org.oiue.table.structure.TableExt;
 import org.oiue.table.structure.TableModel;
 import org.oiue.tools.StatusResult;
+import org.oiue.tools.map.MapUtil;
 import org.oiue.tools.serializ.CloneTools;
 import org.oiue.tools.string.StringUtil;
 
@@ -36,6 +39,7 @@ public class ResourceImpl extends BMO implements IResource {
 	private static Logger logger;
 	private static TimeLogger tLogger;
 	private static LogService logService;
+	private static CacheServiceManager cacheService;
 
 	private static Map<String, EventFilter> beforeEventFilter = new HashMap<String, EventFilter>();
 	private static Map<Integer, String> beforeFilterSort = new TreeMap<Integer, String>();
@@ -43,9 +47,11 @@ public class ResourceImpl extends BMO implements IResource {
 	private static Map<String, EventResultFilter> afterEventFilter = new HashMap<String, EventResultFilter>();
 	private static Map<Integer, String> afterFilterSort = new TreeMap<Integer, String>();
 
-	public ResourceImpl(LogService logService,AnalyzerService analyzerService) {
+	public ResourceImpl(LogService logService,AnalyzerService analyzerService, CacheServiceManager cacheService) {
 		logger = logService.getLogger(this.getClass());
 		tLogger = analyzerService.getLogger(this.getClass());
+
+		ResourceImpl.cacheService = cacheService;
 		ResourceImpl.logService = logService;
 	}
 	public ResourceImpl() {}
@@ -170,12 +176,19 @@ public class ResourceImpl extends BMO implements IResource {
 		}
 		if (StringUtil.isEmptys(data_source_name))
 			data_source_name = default_data_source_name;
-		EventConvertService eventConvertService = (EventConvertService) this.getIDMO(EventConvertService.class.getName());
-		Map<String, Object> event_query = new HashMap<>();
-		event_query.put(EventField.service_event_id, event_id);
-		event_query.put(EventField.data_source_name, data_source_name);
-		event_query.put("cmd_key", 10);
-		return this.convertCallEvent(eventConvertService.query(event_query), data_source_name, map, callBack);
+		String eventId = data_source_name+"%"+event_id;
+		Map eventMap = (Map) cacheService.get("_system_event_", eventId);
+		if(eventMap==null||!openCache){
+			EventConvertService eventConvertService = (EventConvertService) this.getIDMO(EventConvertService.class.getName(),data_source_name);
+			Map<String, Object> event_query = new HashMap<>();
+			event_query.put(EventField.service_event_id, event_id);
+			event_query.put(EventField.data_source_name, data_source_name);
+			event_query.put("cmd_key", 10);
+			eventMap=eventConvertService.query(event_query);
+			cacheService.put("_system_event_",eventId, eventMap,Type.ONE);
+		}
+		String query_data_source_name = MapUtil.getString(map, "data_source_name");
+		return this.convertCallEvent(eventMap, StringUtil.isEmptys(query_data_source_name)?data_source_name:query_data_source_name, map, callBack);
 	}
 
 	@Override
@@ -310,9 +323,21 @@ public class ResourceImpl extends BMO implements IResource {
 	}
 
 	private static String default_data_source_name = "";
+	private static boolean openCache = true;
 
 	public void updated(Dictionary<String, ?> props)  {
 		default_data_source_name = (String) props.get("defaultConn");
+
+		try {
+			String openCacheStr =  props.get("openCache")+"";
+			if(StringUtil.isTrue(openCacheStr)){
+				openCache=true;
+			}else{
+				openCache = false;
+			}
+		} catch (Throwable e) {
+			logger.error(e.getMessage(), e);
+		}
 	}
 	@Override
 	public boolean registerEventFilter(String requestEvent, EventFilter eventFilter, int index) {

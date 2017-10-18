@@ -1,15 +1,7 @@
 package org.oiue.service.odp.event.dmo.postgresql.query;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.math.BigDecimal;
-import java.sql.Clob;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +13,7 @@ import org.oiue.service.odp.event.api.Event;
 import org.oiue.service.odp.event.api.EventConvertService;
 import org.oiue.service.odp.event.api.EventField;
 import org.oiue.table.structure.TableModel;
+import org.oiue.tools.map.MapUtil;
 
 public class EventPostgresqlService extends DMO implements Event{
 
@@ -53,6 +46,16 @@ public class EventPostgresqlService extends DMO implements Event{
 		Object rtnObject;
 		EventConvertService eventConvert = this.getIDMO(EventConvertService.class.getName());
 
+		int limit = 20;
+		int start = 0;
+		try {
+			limit=MapUtil.getInt(data, "limit");
+			start=MapUtil.getInt(data, "start");
+		} catch (Throwable e) {}
+		StringBuffer sb = new StringBuffer();
+		if(limit>0)
+			sb.append(" limit ").append(limit).append(" offset ").append(start);
+
 		List<Map<?, ?>> events = eventConvert.convert(event, data);
 		logger.debug("events:"+events+"|event:"+event+"|data:"+data);
 		if (events == null||events.size()==0){
@@ -60,6 +63,7 @@ public class EventPostgresqlService extends DMO implements Event{
 		}
 		if (events.size() == 1) {
 			Map event_t =events.get(0);
+			event_t.put("cutPage", sb.toString());
 			if(event_t==null||event_t.get(EventField.event_type)==null)
 				throw new RuntimeException("event error ！events:"+events+"|event:"+event+"|data:"+data);
 			rtnObject = call(event_t, callBack);
@@ -83,7 +87,8 @@ public class EventPostgresqlService extends DMO implements Event{
 		if(countSql == null) {
 			String content = (String) map.get(EventField.content);
 			int index = content.indexOf("from");
-			map.put(EventField.contentCount, "select count(1) as COUNT "+ content.substring(index, content.length()));
+			int order_index = content.indexOf("order by");
+			map.put(EventField.contentCount, "select count(1) as COUNT "+ content.substring(index, order_index>0?order_index:content.length()));
 		}
 		return executeQuery(map, callBack);
 	}
@@ -96,9 +101,14 @@ public class EventPostgresqlService extends DMO implements Event{
 			logger.error("the sql is null");
 			return null;
 		}
+		String cutPage = null;
+		try {
+			cutPage=MapUtil.getString(map, "cutPage");
+		} catch (Throwable e) {}
+
 		List<String> fmConditionList = (List<String>) map.get(EventField.contentList);
 
-		this.execute(sql, fmConditionList);
+		this.execute(sql+(cutPage==null?"":" "+cutPage), fmConditionList);
 		Map result = new HashMap();
 		if(callBack == null) {
 			result.put("root", getResult(this.getRs()));
@@ -111,69 +121,5 @@ public class EventPostgresqlService extends DMO implements Event{
 		this.execute(countSql, fmConditionList);
 		result.put("totalProperty", getResult(this.getRs()).get(0).get("count"));
 		return result;
-	}
-
-
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	private List<Map> getResult(ResultSet rs) throws SQLException{
-		ResultSetMetaData rsmd = rs.getMetaData();
-		List<Map> listMap = new ArrayList<Map>();
-		while(rs.next()){
-			int sum = rsmd.getColumnCount();
-			Hashtable row = new Hashtable();
-			for (int i = 1; i < sum + 1; i++) {
-				Object value = rs.getObject(i);
-				if ((value instanceof BigDecimal)) {
-					if (((BigDecimal)value).scale() == 0) {
-						value = Long.valueOf(((BigDecimal)value).longValue());
-					} else {
-						value = Double.valueOf(((BigDecimal)value).doubleValue());
-					}
-				} else if ((value instanceof Clob)) {
-					value = clobToString((Clob)value);
-				}
-				String key = rsmd.getColumnName(i);
-				row.put(key, value == null ? "" : value);
-			}
-			listMap.add(row);
-		}
-		return listMap;
-	}
-
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	private Map getMapResult(ResultSet rs) throws SQLException{
-		ResultSetMetaData rsmd = rs.getMetaData();
-		int sum = rsmd.getColumnCount();
-		Hashtable row = new Hashtable();
-		for (int i = 1; i < sum + 1; i++) {
-			Object value = rs.getObject(i);
-			if ((value instanceof BigDecimal)) {
-				if (((BigDecimal)value).scale() == 0) {
-					value = Long.valueOf(((BigDecimal)value).longValue());
-				} else {
-					value = Double.valueOf(((BigDecimal)value).doubleValue());
-				}
-			} else if ((value instanceof Clob)) {
-				value = clobToString((Clob)value);
-			}
-			String key = rsmd.getColumnName(i);
-			row.put(key.toUpperCase(), value == null ? "" : value);
-		}
-		return row;
-	}
-
-	private String clobToString(Clob clob) {
-		if (clob == null) {
-			return null;
-		}
-		try {
-			Reader inStreamDoc = clob.getCharacterStream();
-			char[] tempDoc = new char[(int)clob.length()];
-			inStreamDoc.read(tempDoc);
-			inStreamDoc.close();
-			return new String(tempDoc);
-		} catch (IOException | SQLException e) {
-			throw new RuntimeException(e);
-		}
 	}
 }

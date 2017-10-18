@@ -1,5 +1,7 @@
 package org.oiue.service.odp.dmo.p;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URL;
@@ -9,23 +11,33 @@ import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.oiue.service.odp.dmo.BlobType;
 import org.oiue.service.odp.dmo.ClobType;
 import org.oiue.tools.StatusResult;
+import org.oiue.tools.json.JSONUtil;
 
 @SuppressWarnings({ "rawtypes", "serial" })
 public abstract class JDBC_DMO implements IJDBC_DMO {
 	protected Connection conn;
 	protected PreparedStatement pstmt;
+	protected CallableStatement cstmt;
 	protected String sql;
 	protected ResultSet rs;
-	protected CallableStatement stmt;
+	protected Statement stmt;
+
 	@Override
 	public Connection getConn() {
 		return conn;
@@ -48,7 +60,7 @@ public abstract class JDBC_DMO implements IJDBC_DMO {
 
 	@Override
 	public CallableStatement getStmt() {
-		return stmt;
+		return cstmt;
 	}
 
 	@Override
@@ -58,22 +70,36 @@ public abstract class JDBC_DMO implements IJDBC_DMO {
 			if (this.getRs()!=null) {
 				this.getRs().close();
 			}
-			sql = sql.trim().toLowerCase();
-			if(sql.startsWith("call")){
-				this.stmt=this.getConn().prepareCall(sql);
+			sql = sql.trim();
+			if(sql.toLowerCase().startsWith("call")){
+				this.cstmt=this.getConn().prepareCall(sql);
+				this.cstmt.setFetchSize(50);
 				int i=1;
 				if(queryParams!=null)
 					for (Iterator iterator = queryParams.iterator(); iterator.hasNext();) {
-						stmt.setObject(i++ , iterator.next());
+						cstmt.setObject(i++ , iterator.next());
 					}
-				stmt.execute();
-			}else if(sql.startsWith("insert")||sql.startsWith("update")||sql.startsWith("delete")){
+				cstmt.execute();
+			}else if(sql.toLowerCase().startsWith("insert")||sql.toLowerCase().startsWith("update")||sql.toLowerCase().startsWith("delete")){
+				this.pstmt = this.getConn().prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+				this.setQueryParams(queryParams);
+				this.pstmt.setFetchSize(50);
+				Map data = new HashMap<>();
+				data.put("count", this.getPstmt().executeUpdate());
+				ResultSet generatedKeys =  this.getPstmt().getGeneratedKeys();
+				if(generatedKeys!=null)
+					try {
+						data.put("root", getResult(generatedKeys));
+					} finally {
+						if(generatedKeys!=null)
+							generatedKeys.close();
+						generatedKeys=null;
+					}
+				sr.setData(data);
+			}else if(sql.toLowerCase().startsWith("select")){
 				this.pstmt = this.getConn().prepareStatement(sql);
 				this.setQueryParams(queryParams);
-				this.getPstmt().executeUpdate();
-			}else if(sql.startsWith("select")){
-				this.pstmt = this.getConn().prepareStatement(sql);
-				this.setQueryParams(queryParams);
+				this.pstmt.setFetchSize(50);
 				this.rs=this.getPstmt().executeQuery();
 			}else{
 				throw new RuntimeException("sql:"+sql);
@@ -120,6 +146,10 @@ public abstract class JDBC_DMO implements IJDBC_DMO {
 				pstmt.setString(column, ((URL) obj).getPath());
 			} else if (obj instanceof URI) {
 				pstmt.setString(column, ((URI) obj).getPath());
+			} else if (obj instanceof Map) {
+				pstmt.setString(column, JSONUtil.parserToStr((Map) obj));
+			} else if (obj instanceof List) {
+				pstmt.setString(column, JSONUtil.parserToStr((List) obj));
 			} else {// if(obj instanceof Boolean)
 				pstmt.setObject(column, obj);
 			}
@@ -130,6 +160,70 @@ public abstract class JDBC_DMO implements IJDBC_DMO {
 		}
 	}
 
+	@Override
+	public List<Map> getResult(ResultSet rs) throws SQLException{
+		ResultSetMetaData rsmd = rs.getMetaData();
+		List<Map> listMap = new ArrayList<Map>();
+		while(rs.next()){
+			int sum = rsmd.getColumnCount();
+			Hashtable row = new Hashtable();
+			for (int i = 1; i < sum + 1; i++) {
+				Object value = rs.getObject(i);
+				if ((value instanceof BigDecimal)) {
+					if (((BigDecimal)value).scale() == 0) {
+						value = Long.valueOf(((BigDecimal)value).longValue());
+					} else {
+						value = Double.valueOf(((BigDecimal)value).doubleValue());
+					}
+				} else if ((value instanceof Clob)) {
+					value = clobToString((Clob)value);
+				}
+				//			String key = rsmd.getColumnName(i);
+				String key = rsmd.getColumnLabel(i);
+				row.put(key, value == null ? "" : value);
+			}
+			listMap.add(row);
+		}
+		return listMap;
+	}
+
+	@Override
+	public Map getMapResult(ResultSet rs) throws SQLException{
+		ResultSetMetaData rsmd = rs.getMetaData();
+		int sum = rsmd.getColumnCount();
+		Hashtable row = new Hashtable();
+		for (int i = 1; i < sum + 1; i++) {
+			Object value = rs.getObject(i);
+			if ((value instanceof BigDecimal)) {
+				if (((BigDecimal)value).scale() == 0) {
+					value = Long.valueOf(((BigDecimal)value).longValue());
+				} else {
+					value = Double.valueOf(((BigDecimal)value).doubleValue());
+				}
+			} else if ((value instanceof Clob)) {
+				value = clobToString((Clob)value);
+			}
+			//			String key = rsmd.getColumnName(i);
+			String key = rsmd.getColumnLabel(i);
+			row.put(key, value == null ? "" : value);
+		}
+		return row;
+	}
+
+	protected String clobToString(Clob clob) {
+		if (clob == null) {
+			return null;
+		}
+		try {
+			Reader inStreamDoc = clob.getCharacterStream();
+			char[] tempDoc = new char[(int)clob.length()];
+			inStreamDoc.read(tempDoc);
+			inStreamDoc.close();
+			return new String(tempDoc);
+		} catch (IOException | SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
 	/**
 	 * 根据参数值queryParams集合
 	 *
@@ -169,9 +263,9 @@ public abstract class JDBC_DMO implements IJDBC_DMO {
 					e2.printStackTrace();
 				}
 			}
-			if (stmt != null) {
-				stmt.close();
-				stmt = null;
+			if (cstmt != null) {
+				cstmt.close();
+				cstmt = null;
 			}
 			if (pstmt != null) {
 				pstmt.close();
@@ -180,7 +274,7 @@ public abstract class JDBC_DMO implements IJDBC_DMO {
 		} catch (Throwable t) {
 			return false;
 		}
-		if (pstmt == null && stmt == null) {
+		if (pstmt == null && cstmt == null) {
 			return true;
 		}
 		return false;

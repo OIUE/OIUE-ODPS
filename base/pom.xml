@@ -22,6 +22,7 @@ org.oiue.service.sql;version="[1.0,2)",
 org.oiue.table.structure;version="[1.0,2)",
 org.oiue.tools;version="[1.0,2)",
 org.oiue.tools.sql;version="[1.0,2)",
+org.oiue.tools.json;version="[1.0,2)",
 org.oiue.tools.string;version="[1.0,2)"</project.import>
 		<project.export>org.oiue.service.odp.base,
 org.oiue.service.odp.bmo,

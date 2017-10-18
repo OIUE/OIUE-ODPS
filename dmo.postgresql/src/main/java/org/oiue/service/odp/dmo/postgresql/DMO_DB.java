@@ -18,6 +18,9 @@ public class DMO_DB extends DMO_ROOT implements IDMO_DB {
 		if (sql == null) {
 			return null;
 		}
+		/**
+		 * select * from persons limit A offset B; 解释：A就是你需要多少行；B就是查询的起点位置
+		 */
 		if (sql.toLowerCase().indexOf(" limit ") < 0) {
 			//s.append(" limit " +(first-1<0?first:first-1)+","+max);
 			//((Integer)model.getValue("pageIndex")-1)*(Integer)model.getValue("pageRecNumber")+","+(Integer)model.getValue("pageRecNumber")

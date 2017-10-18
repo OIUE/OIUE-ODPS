@@ -405,15 +405,15 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 				// filedStr text,valueStr text,filedIDName varchar(64),out
 				// returnVarchar VARCHAR(255))
 				sql = "call insertTree(?,?,?,?,?,?,?,?);";
-				stmt = this.getConn().prepareCall(sql);
-				stmt.setString(1, tm.getTableName());
-				stmt.setString(2, tm.getValue("autoCode") + "");
-				stmt.setString(3, tm.getValue("name") + "");
-				stmt.setInt(4, Integer.parseInt(tm.getValue("position") + ""));
-				stmt.setString(5, tm.getKeyRemoveStruture());
-				stmt.setString(6, tm.getValueStr());
-				stmt.setString(7, tm.getTableIDFieldName());
-				stmt.registerOutParameter(8, Types.VARCHAR);
+				cstmt = this.getConn().prepareCall(sql);
+				cstmt.setString(1, tm.getTableName());
+				cstmt.setString(2, tm.getValue("autoCode") + "");
+				cstmt.setString(3, tm.getValue("name") + "");
+				cstmt.setInt(4, Integer.parseInt(tm.getValue("position") + ""));
+				cstmt.setString(5, tm.getKeyRemoveStruture());
+				cstmt.setString(6, tm.getValueStr());
+				cstmt.setString(7, tm.getTableIDFieldName());
+				cstmt.registerOutParameter(8, Types.VARCHAR);
 				break;
 
 			case 1:
@@ -422,25 +422,25 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 				// in nextNodeID int(11),in filedStr text,filedIDName
 				// varchar(64))
 				sql = "call updateTree(?,?,?,?,?,?,?);";
-				stmt = this.getConn().prepareCall(sql);
-				stmt.setString(1, tm.getTableName());
-				stmt.setInt(2, Integer.parseInt(tm.getValue(tm.getTableIDFieldName()) + ""));
-				stmt.setString(3, tm.getValue("autoCode") + "");
-				stmt.setString(4, tm.getValue("name") + "");
-				stmt.setInt(5, Integer.parseInt(tm.getValue("position") + ""));
-				stmt.setString(6, tm.getKeyValueRemoveStructure());
-				stmt.setString(7, tm.getTableIDFieldName());
+				cstmt = this.getConn().prepareCall(sql);
+				cstmt.setString(1, tm.getTableName());
+				cstmt.setInt(2, Integer.parseInt(tm.getValue(tm.getTableIDFieldName()) + ""));
+				cstmt.setString(3, tm.getValue("autoCode") + "");
+				cstmt.setString(4, tm.getValue("name") + "");
+				cstmt.setInt(5, Integer.parseInt(tm.getValue("position") + ""));
+				cstmt.setString(6, tm.getKeyValueRemoveStructure());
+				cstmt.setString(7, tm.getTableIDFieldName());
 				break;
 			default:
 				break;
 			}
 
-			boolean hadResults = stmt.execute();
+			boolean hadResults = cstmt.execute();
 			while (hadResults) {
 			}
 			switch (tm.getCmdKey()) {
 			case 0:
-				newAutoCode = stmt.getString(8);
+				newAutoCode = cstmt.getString(8);
 				tm.put("autoCode", newAutoCode);
 				break;
 			}

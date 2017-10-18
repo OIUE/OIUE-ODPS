@@ -8,6 +8,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -155,5 +156,13 @@ public abstract class DMO implements IDMO {
 	@Override
 	public boolean close() {
 		return idmo.close();
+	}
+	@Override
+	public List<Map> getResult(ResultSet rs) throws SQLException {
+		return idmo.getResult(rs);
+	}
+	@Override
+	public Map getMapResult(ResultSet rs) throws SQLException {
+		return idmo.getMapResult(rs);
 	}
 }
