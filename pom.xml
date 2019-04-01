@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.oiue.services</groupId>
 		<artifactId>services</artifactId>
-		<version>1.0.1</version>
+		<version>1.1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>odps</artifactId>
   <packaging>pom</packaging>
@@ -15,27 +15,37 @@
     <module>base</module>
     <module>parent</module>
     <module>res.dmo</module>
+    <module>event.api</module>
     
-    <module>dmo.mysql</module>
+<!--     <module>dmo.mysql</module>
     <module>dmo.postgresql</module>
     <module>dmo.h2</module>
     <module>dmo.neo4j</module>
-    <module>event</module>
+    <module>event</module> -->
     
-    <module>res.dmo.mysql</module>
+<!--     <module>res.dmo.mysql</module>
     
     <module>res.dmo.postgresql</module>
     
     <module>res.dmo.h2</module>
     
-    <module>res.dmo.neo4j</module>
+    <module>res.dmo.neo4j</module> -->
     
-    <module>structure</module>
-    <module>structure.impl</module>
+<!--     <module>mysql</module> -->
+    <module>postgresql</module>
+    
+<!--     <module>structure</module>
+    <module>structure.impl</module> -->
+    <module>event.sql.structure</module>
+    <module>event.sql.structure.impl</module>
+    <module>structure.api</module>
+    <module>structure.base</module>
     <module>structure.selectsql</module>
     
     <module>res.api</module>
     <module>res.base</module>
+    <module>sqlBuilder</module>
+    <module>sqlBuilder.base</module>
     
     <module>res.event.resultfilter.conver2tree</module>
   </modules>

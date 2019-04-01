@@ -5,5 +5,5 @@ import java.util.List;
 import java.util.Map;
 
 public interface StructureService extends Serializable {
-    List<Map<?,?>> parse(Map<?, ?> event, Map<String, Object> parameter);
+	List<Map<?, ?>> parse(Map<?, ?> event, Map<String, Object> parameter);
 }

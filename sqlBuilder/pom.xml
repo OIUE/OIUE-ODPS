@@ -4,12 +4,12 @@
 
 	<packaging>bundle</packaging>
 
-	<name>OIUE ODP service core </name>
+	<name>OIUE ODP sql builder service </name>
 	<description>A bundle that oiue open data persistence core</description>
 	
 	<parent>
 		<groupId>org.oiue.services.odps</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0.1</version>
+		<version>1.1.0-SNAPSHOT</version>
 	</parent>
 </project>

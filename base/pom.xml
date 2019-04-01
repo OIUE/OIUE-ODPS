@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.oiue.services.odps</groupId>
 	<artifactId>org.oiue.service.odp.base</artifactId>
@@ -7,29 +8,31 @@
 
 	<name>OIUE ODP service core </name>
 	<description>A bundle that oiue open data persistence core</description>
-	
+
 	<parent>
 		<groupId>org.oiue.services</groupId>
 		<artifactId>imports</artifactId>
-		<version>1.0.1</version>
+		<version>1.1.0-SNAPSHOT</version>
 	</parent>
 	<properties>
-		<project.activator>${artifactId}.Activator</project.activator>
+		<project.activator>${project.artifactId}.Activator</project.activator>
 		<project.dependency>commons-lang3</project.dependency>
-		<project.import>org.oiue.service.log;version="[1.0,2)",
-org.oiue.service.osgi;version="[1.0,2)",
-org.oiue.service.sql;version="[1.0,2)",
-org.oiue.table.structure;version="[1.0,2)",
-org.oiue.tools;version="[1.0,2)",
-org.oiue.tools.sql;version="[1.0,2)",
-org.oiue.tools.json;version="[1.0,2)",
-org.oiue.tools.string;version="[1.0,2)"</project.import>
+		<project.import>org.oiue.service.log,
+			org.oiue.service.system.analyzer,
+			org.oiue.service.osgi,
+			org.oiue.service.sql,
+			org.oiue.table.structure,
+			org.oiue.tools,
+			org.oiue.tools.sql,
+			org.oiue.tools.json,
+			org.oiue.tools.exception,
+			org.oiue.tools.string</project.import>
 		<project.export>org.oiue.service.odp.base,
-org.oiue.service.odp.bmo,
-org.oiue.service.odp.dmo,
-org.oiue.service.odp.bmo.p,
-org.oiue.service.odp.dmo.p,
-org.oiue.service.odp.objpool</project.export>
+			org.oiue.service.odp.bmo,
+			org.oiue.service.odp.dmo,
+			org.oiue.service.odp.bmo.p,
+			org.oiue.service.odp.dmo.p,
+			org.oiue.service.odp.objpool</project.export>
 	</properties>
 	<dependencies>
 		<dependency>

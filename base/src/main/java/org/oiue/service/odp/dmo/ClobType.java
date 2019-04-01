@@ -22,7 +22,7 @@ import java.sql.Types;
  */
 @SuppressWarnings("serial")
 public class ClobType implements Serializable {
-
+	
 	/**
 	 * 
 	 * 给statement设置clob类型参数
@@ -45,15 +45,13 @@ public class ClobType implements Serializable {
 			}
 		}
 	}
-
+	
 	/**
 	 * 
 	 * 得到clob类型字段对象
 	 * 
-	 * @param rs
-	 *            ResultSet
-	 * @param name
-	 *            String
+	 * @param rs ResultSet
+	 * @param name String
 	 * @return Clob
 	 * @throws SQLException 获取异常
 	 * @author 孙天策
@@ -61,15 +59,13 @@ public class ClobType implements Serializable {
 	public Clob get(ResultSet rs, String name) throws SQLException {
 		return rs.getClob(name);
 	}
-
+	
 	/**
 	 * 
 	 * 得到clob类型字段对象
 	 * 
-	 * @param rs
-	 *            ResultSet
-	 * @param index
-	 *            int
+	 * @param rs ResultSet
+	 * @param index int
 	 * @return Clob
 	 * @throws SQLException 获取
 	 * @author 孙天策

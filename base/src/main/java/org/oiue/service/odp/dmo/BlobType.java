@@ -24,25 +24,22 @@ import java.sql.Types;
 @SuppressWarnings("serial")
 public class BlobType implements Serializable {
 	// private transient Logger logger = Logger.getLogger(BlobType.class);
-
+	
 	public BlobType() {
-
+		
 	}
-
+	
 	/**
 	 * 
 	 * 给statement加blob类型参数
 	 * 
-	 * @param st
-	 *            PreparedStatement
-	 * @param obj
-	 *            Object
-	 * @param index
-	 *            int
-	 * @throws Exception 设置异常
+	 * @param st PreparedStatement
+	 * @param obj Object
+	 * @param index int @ 设置异常
 	 * @author 孙天策
+	 * @throws SQLException
 	 */
-	public void set(PreparedStatement st, Object obj, int index) throws Exception {
+	public void set(PreparedStatement st, Object obj, int index) throws SQLException {
 		if (obj == null) {
 			st.setNull(index, Types.BLOB);
 		} else {
@@ -57,15 +54,13 @@ public class BlobType implements Serializable {
 			}
 		}
 	}
-
+	
 	/**
 	 * 
 	 * 得到blob类型字段对象
 	 * 
-	 * @param rs
-	 *            ResultSet
-	 * @param name
-	 *            String
+	 * @param rs ResultSet
+	 * @param name String
 	 * @return Blob
 	 * @throws SQLException 获取异常
 	 * @author 孙天策
@@ -73,15 +68,13 @@ public class BlobType implements Serializable {
 	public Blob get(ResultSet rs, String name) throws SQLException {
 		return rs.getBlob(name);
 	}
-
+	
 	/**
 	 * 
 	 * 得到blob类型字段对象
 	 * 
-	 * @param rs
-	 *            ResultSet
-	 * @param index
-	 *            int
+	 * @param rs ResultSet
+	 * @param index int
 	 * @return Blob
 	 * @throws SQLException 获取数据异常
 	 * @author 孙天策

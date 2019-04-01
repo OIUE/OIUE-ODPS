@@ -6,6 +6,4 @@ package org.oiue.service.odp.dmo.p;
  * @author Every{王勤}
  *
  */
-@SuppressWarnings({ "rawtypes" })
-public interface IDMO_ROOT extends IJDBC_DMO {
-}
+public interface IDMO_ROOT extends IJDBC_DMO {}

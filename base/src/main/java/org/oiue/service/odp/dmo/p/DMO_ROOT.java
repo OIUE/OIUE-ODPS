@@ -9,6 +9,8 @@ import java.util.Map;
 
 import org.oiue.service.odp.proxy.ProxyFactory;
 import org.oiue.table.structure.TableModel;
+import org.oiue.tools.StatusResult;
+import org.oiue.tools.exception.OIUEException;
 import org.oiue.tools.sql.SQL;
 
 /**
@@ -16,21 +18,18 @@ import org.oiue.tools.sql.SQL;
  *
  * @author Every{王勤}
  */
-@SuppressWarnings({ "unused", "serial" })
+@SuppressWarnings({ "unused", "serial", "rawtypes", "unchecked" })
 public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
-
+	
 	private ProxyFactory proxyFactory = ProxyFactory.getInstance();
-
-	public DMO_ROOT() {
-	}
-
+	
+	public DMO_ROOT() {}
+	
 	/**
 	 * 获取分页数据总行数
 	 *
-	 * @param sqlStr
-	 *            sql
-	 * @param tm
-	 *            对象
+	 * @param sqlStr sql
+	 * @param tm 对象
 	 * @return 可执行sql对象
 	 */
 	public SQL getRowCountSQL(String sqlStr, TableModel tm) {
@@ -45,7 +44,7 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 			s1 = sqlStr.substring(0, s1.indexOf("order by"));
 		}
 		s.append("select count(*)");
-
+		
 		if (s1.indexOf("%from%") > 0) {
 			s.append(sqlStr.substring(s1.indexOf("%from%")));
 		} else {
@@ -55,18 +54,16 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 		sql.sql = "" + s;
 		return sql;
 	}
-
+	
 	/**
 	 *
 	 * 得到增加sql
 	 *
-	 * @param tm
-	 *            对象
+	 * @param tm 对象
 	 * @return 可执行sql对象
-	 * @throws Throwable
-	 *             异常
+	 * @throws Throwable 异常
 	 */
-	public SQL getInsertSql(TableModel tm) throws Throwable {
+	public SQL getInsertSql(TableModel tm) {
 		StringBuffer s = new StringBuffer();
 		StringBuffer ts = new StringBuffer();
 		tm.put(tm.getMapRemoveID());
@@ -97,7 +94,7 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 		sql.pers = pers;
 		return sql;
 	}
-
+	
 	public SQL getInsertSql(Map dm, String tableName) {
 		StringBuffer s = new StringBuffer();
 		StringBuffer ts = new StringBuffer();
@@ -128,18 +125,16 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 		sql.pers = pers;
 		return sql;
 	}
-
+	
 	/**
 	 *
 	 * 得到更新sql
 	 *
-	 * @param tm
-	 *            对象
+	 * @param tm 对象
 	 * @return 可执行sql对象
-	 * @throws Throwable
-	 *             异常
+	 * @throws Throwable 异常
 	 */
-	public SQL getUpdateSql(TableModel tm) throws Throwable {
+	public SQL getUpdateSql(TableModel tm) {
 		StringBuffer s = new StringBuffer();
 		tm.put(tm.getMapRemoveID());
 		if (tm.getMapData() == null) {
@@ -171,18 +166,16 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 		sql.pers = pers;
 		return sql;
 	}
-
+	
 	/**
 	 *
 	 * 得到删除sql
 	 *
-	 * @param tm
-	 *            对象
+	 * @param tm 对象
 	 * @return 可执行sql对象
-	 * @throws Throwable
-	 *             异常
+	 * @throws Throwable 异常
 	 */
-	public SQL getDelSql(TableModel tm) throws Throwable {
+	public SQL getDelSql(TableModel tm) {
 		StringBuffer s = new StringBuffer();
 		tm.put(tm.getMapRemoveID());
 		if (tm.getMapData() == null) {
@@ -198,18 +191,16 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 		sql.pers = pers;
 		return sql;
 	}
-
+	
 	/**
 	 *
 	 * 查询sql
 	 *
-	 * @param tm
-	 *            对象
+	 * @param tm 对象
 	 * @return 可执行sql对象
-	 * @throws Throwable
-	 *             异常
+	 * @throws Throwable 异常
 	 */
-	public SQL getQuerySql(TableModel tm) throws Throwable {
+	public SQL getQuerySql(TableModel tm) {
 		StringBuffer s = new StringBuffer();
 		String id = tm.getTableIDFieldName();
 		Map data = tm.getMapData();
@@ -248,7 +239,7 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 			// }
 			// }
 			// }
-
+			
 		}
 		if (s.toString().endsWith(","))
 			s.deleteCharAt(s.length() - 1);
@@ -260,22 +251,19 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 		sql.sql = "" + s;
 		sql.pers = pers;
 		return sql;
-
+		
 	}
-
+	
 	/**
 	 *
 	 * 查询sql
 	 *
-	 * @param tm
-	 *            对象
-	 * @param scope
-	 *            范围
+	 * @param tm 对象
+	 * @param scope 范围
 	 * @return 可执行sql对象
-	 * @throws Throwable
-	 *             查询异常
+	 * @throws Throwable 查询异常
 	 */
-	public SQL getQuerySql(TableModel tm, String scope) throws Throwable {
+	public SQL getQuerySql(TableModel tm, String scope) {
 		StringBuffer s = new StringBuffer();
 		if (tm == null) {
 			return null;
@@ -317,7 +305,7 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 			// }
 			// }
 			// }
-
+			
 		}
 		if (s.toString().endsWith(","))
 			s.deleteCharAt(s.length() - 1);
@@ -327,14 +315,12 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 		sql.sql = "" + s;
 		return sql;
 	}
-
+	
 	/**
 	 * 通过反射 将字段属性替换到Sql语句中(注意大小写)
 	 *
-	 * @param sourceStr
-	 *            源串
-	 * @param tb
-	 *            对象
+	 * @param sourceStr 源串
+	 * @param tb 对象
 	 * @return 可执行sql对象
 	 */
 	public SQL AnalyzeSql(String sourceStr, TableModel tb) {
@@ -351,110 +337,122 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 			if (temps.length == 2) {
 				pers.add(tb.getValue(temps[0]));
 				s.append("?").append(temps[1]);
-			} else
-				throw new RuntimeException("");
+			} else {
+				if (tt.length() == temps[0].length() + 1) {
+					pers.add(tb.getValue(temps[0]));
+					s.append("?");
+				} else
+					throw new RuntimeException("");
+			}
 		}
 		SQL sql = new SQL();
 		sql.sql = "" + s;
 		sql.pers = pers;
 		return sql;
 	}
-
-	public boolean Update(TableModel tm) throws Throwable {
+	
+	public boolean Update(TableModel tm) {
 		switch (tm.getCmdKey()) {
-		case 0:// select table field for table filed mapcode
-			SQL s = this.getInsertSql(tm);
-			pstmt = this.getConn().prepareStatement(s.sql);
-			setQueryParams(s.pers);
-			tm.setRowNum(pstmt.executeUpdate());
-			break;
+			case 0:// select table field for table filed mapcode
+				SQL s = this.getInsertSql(tm);
+				try {
+					pstmt = this.getConn().prepareStatement(s.sql);
+					setQueryParams(s.pers);
+					tm.setRowNum(pstmt.executeUpdate());
+				} catch (Exception e) {
+					throw new OIUEException(StatusResult._blocking_errors, tm, e);
+				}
+				break;
 		}
 		return true;
 	}
-
-	public boolean Update(List<TableModel> tm) throws Throwable {
+	
+	public boolean Update(List<TableModel> tm) {
 		if (tm.size() == 0)
 			return false;
 		switch (tm.get(0).getCmdKey()) {
-		case 0:// select table field for table filed mapcode
-			SQL s = this.getInsertSql(tm.get(0));
-			pstmt = this.getConn().prepareStatement(s.sql);
-			for (TableModel tableModel : tm) {
-				tableModel.put(tableModel.getMapRemoveID());
-				setQueryParams(tableModel.getMapData().values());
-				pstmt.addBatch();
-			}
-			try {
-				pstmt.executeBatch();
-			} catch (Exception e) {
-				throw e;
-			}
-			break;
+			case 0:// select table field for table filed mapcode
+				SQL s = this.getInsertSql(tm.get(0));
+				try {
+					pstmt = this.getConn().prepareStatement(s.sql);
+					for (TableModel tableModel : tm) {
+						tableModel.put(tableModel.getMapRemoveID());
+						setQueryParams(tableModel.getMapData().values());
+						pstmt.addBatch();
+					}
+					pstmt.executeBatch();
+					
+				} catch (Exception e) {
+					throw new OIUEException(StatusResult._blocking_errors, tm, e);
+				}
+				break;
 		}
 		return true;
 	}
-
-	public boolean UpdateTree(TableModel tm) throws Throwable {
+	
+	public boolean UpdateTree(TableModel tm) {
 		String newAutoCode = "";
 		String sql = null;
 		try {
 			switch (tm.getCmdKey()) {
-			case 0:
-				// insertTree(tableName VARCHAR(32),parentCode VARCHAR(64),name
-				// VARCHAR(64),nextNodeID int,
-				// filedStr text,valueStr text,filedIDName varchar(64),out
-				// returnVarchar VARCHAR(255))
-				sql = "call insertTree(?,?,?,?,?,?,?,?);";
-				cstmt = this.getConn().prepareCall(sql);
-				cstmt.setString(1, tm.getTableName());
-				cstmt.setString(2, tm.getValue("autoCode") + "");
-				cstmt.setString(3, tm.getValue("name") + "");
-				cstmt.setInt(4, Integer.parseInt(tm.getValue("position") + ""));
-				cstmt.setString(5, tm.getKeyRemoveStruture());
-				cstmt.setString(6, tm.getValueStr());
-				cstmt.setString(7, tm.getTableIDFieldName());
-				cstmt.registerOutParameter(8, Types.VARCHAR);
-				break;
-
-			case 1:
-				// updateTree(in tableName VARCHAR(32),in filedID int(11),in
-				// autoCode VARCHAR(64),in name VARCHAR(64),
-				// in nextNodeID int(11),in filedStr text,filedIDName
-				// varchar(64))
-				sql = "call updateTree(?,?,?,?,?,?,?);";
-				cstmt = this.getConn().prepareCall(sql);
-				cstmt.setString(1, tm.getTableName());
-				cstmt.setInt(2, Integer.parseInt(tm.getValue(tm.getTableIDFieldName()) + ""));
-				cstmt.setString(3, tm.getValue("autoCode") + "");
-				cstmt.setString(4, tm.getValue("name") + "");
-				cstmt.setInt(5, Integer.parseInt(tm.getValue("position") + ""));
-				cstmt.setString(6, tm.getKeyValueRemoveStructure());
-				cstmt.setString(7, tm.getTableIDFieldName());
-				break;
-			default:
-				break;
+				case 0:
+					// insertTree(tableName VARCHAR(32),parentCode VARCHAR(64),name
+					// VARCHAR(64),nextNodeID int,
+					// filedStr text,valueStr text,filedIDName varchar(64),out
+					// returnVarchar VARCHAR(255))
+					sql = "call insertTree(?,?,?,?,?,?,?,?);";
+					cstmt = this.getConn().prepareCall(sql);
+					cstmt.setString(1, tm.getTableName());
+					cstmt.setString(2, tm.getValue("autoCode") + "");
+					cstmt.setString(3, tm.getValue("name") + "");
+					cstmt.setInt(4, Integer.parseInt(tm.getValue("position") + ""));
+					cstmt.setString(5, tm.getKeyRemoveStruture());
+					cstmt.setString(6, tm.getValueStr());
+					cstmt.setString(7, tm.getTableIDFieldName());
+					cstmt.registerOutParameter(8, Types.VARCHAR);
+					break;
+				
+				case 1:
+					// updateTree(in tableName VARCHAR(32),in filedID int(11),in
+					// autoCode VARCHAR(64),in name VARCHAR(64),
+					// in nextNodeID int(11),in filedStr text,filedIDName
+					// varchar(64))
+					sql = "call updateTree(?,?,?,?,?,?,?);";
+					cstmt = this.getConn().prepareCall(sql);
+					cstmt.setString(1, tm.getTableName());
+					cstmt.setInt(2, Integer.parseInt(tm.getValue(tm.getTableIDFieldName()) + ""));
+					cstmt.setString(3, tm.getValue("autoCode") + "");
+					cstmt.setString(4, tm.getValue("name") + "");
+					cstmt.setInt(5, Integer.parseInt(tm.getValue("position") + ""));
+					cstmt.setString(6, tm.getKeyValueRemoveStructure());
+					cstmt.setString(7, tm.getTableIDFieldName());
+					break;
+				default:
+					break;
 			}
-
+			
 			boolean hadResults = cstmt.execute();
-			while (hadResults) {
-			}
+			while (hadResults) {}
 			switch (tm.getCmdKey()) {
-			case 0:
-				newAutoCode = cstmt.getString(8);
-				tm.put("autoCode", newAutoCode);
-				break;
+				case 0:
+					newAutoCode = cstmt.getString(8);
+					tm.put("autoCode", newAutoCode);
+					break;
 			}
-		} catch (Throwable e) {
-		}
+		} catch (Throwable e) {}
 		return true;
 	}
-
-	public TableModel QueryObj(TableModel tm) throws Throwable {
+	
+	public TableModel QueryObj(TableModel tm) {
 		switch (tm.getCmdKey()) {
-		default:
-			SQL tsql = this.getQuerySql(tm);
-			pstmt = this.getConn().prepareStatement(tsql.sql);
-			this.setQueryParams(tsql.pers);
+			default:
+				SQL tsql = this.getQuerySql(tm);
+				try {
+					pstmt = this.getConn().prepareStatement(tsql.sql);
+					this.setQueryParams(tsql.pers);
+				} catch (Exception e) {
+					throw new OIUEException(StatusResult._blocking_errors, tm, e);
+				}
 		}
 		try {
 			if (pstmt != null) {
@@ -463,19 +461,23 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 					tm.set(rs);
 				}
 			}
-		} catch (Throwable e) {
-			throw e;
+		} catch (Exception e) {
+			throw new OIUEException(StatusResult._blocking_errors, tm, e);
 		}
 		return tm;
 	}
-
-	public List Query(TableModel tm) throws Throwable {
+	
+	public List Query(TableModel tm) {
 		List<TableModel> list = new ArrayList<TableModel>();
 		switch (tm.getCmdKey()) {
-		default:
-			SQL tsql = this.getQuerySql(tm);
-			pstmt = this.getConn().prepareStatement(tsql.sql);
-			this.setQueryParams(tsql.pers);
+			default:
+				SQL tsql = this.getQuerySql(tm);
+				try {
+					pstmt = this.getConn().prepareStatement(tsql.sql);
+					this.setQueryParams(tsql.pers);
+				} catch (Exception e) {
+					throw new OIUEException(StatusResult._blocking_errors, tm, e);
+				}
 		}
 		try {
 			if (pstmt != null) {
@@ -487,7 +489,7 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 				}
 			}
 		} catch (Throwable e) {
-			throw e;
+			throw new OIUEException(StatusResult._blocking_errors, tm, e);
 		}
 		return list;
 	}

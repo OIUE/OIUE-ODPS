@@ -19,8 +19,8 @@ public interface IResource extends IBMO {
 	 * @return 是否定义
 	 * @throws Throwable 可能存在的异常
 	 */
-	public boolean haveTable(String name) throws Throwable;
-
+	public boolean haveTable(String name);
+	
 	/**
 	 * 将数据库中的表格添加到资源中
 	 *
@@ -28,8 +28,8 @@ public interface IResource extends IBMO {
 	 * @return 修改成功与否
 	 * @throws Throwable 可能存在的异常
 	 */
-	public boolean updateTable(TableExt dt) throws Throwable;
-
+	public boolean updateTable(TableExt dt);
+	
 	/**
 	 * 修改表格
 	 *
@@ -38,8 +38,8 @@ public interface IResource extends IBMO {
 	 * @return 修改成功与否
 	 * @throws Throwable 可能存在的异常
 	 */
-	public boolean updateTable(TableExt dt, TableExt ret) throws Throwable;
-
+	public boolean updateTable(TableExt dt, TableExt ret);
+	
 	/**
 	 * 根据操作对象实现插入及修改
 	 *
@@ -47,8 +47,8 @@ public interface IResource extends IBMO {
 	 * @return 修改成功与否
 	 * @throws Throwable 可能存在的异常
 	 */
-	public boolean Update(TableModel tableModel) throws Throwable;
-
+	public boolean Update(TableModel tableModel);
+	
 	/**
 	 * 批量操作，根据操作对象实现插入及修改
 	 *
@@ -56,8 +56,8 @@ public interface IResource extends IBMO {
 	 * @return 修改成功与否
 	 * @throws Throwable 可能存在的异常
 	 */
-	public boolean Update(List<TableModel> tm) throws Throwable;
-
+	public boolean Update(List<TableModel> tm);
+	
 	/**
 	 * 根据操作对象部分属性获取对象集合
 	 *
@@ -65,8 +65,8 @@ public interface IResource extends IBMO {
 	 * @return 查询结果
 	 * @throws Throwable 可能存在的异常
 	 */
-	public List Query(TableModel tableModel) throws Throwable;
-
+	public List Query(TableModel tableModel);
+	
 	/**
 	 * 根据操作对象部分属性获取对象
 	 *
@@ -74,8 +74,8 @@ public interface IResource extends IBMO {
 	 * @return 查询结果
 	 * @throws Throwable 可能存在的异常
 	 */
-	public TableModel QueryObj(TableModel tableModel) throws Throwable;
-
+	public TableModel QueryObj(TableModel tableModel);
+	
 	/**
 	 * 通过事件名称及数据源类型获取事件属性
 	 *
@@ -84,36 +84,40 @@ public interface IResource extends IBMO {
 	 * @return 结果
 	 * @throws Throwable 可能存在的异常
 	 */
-	public TableModel getEvent(String event_name, String data_type_class) throws Throwable;
-
-	/**
-	 * 根据 服务事件名称、数据源名称、服务名、bundle服务名、bundle名 查找事件并执行
-	 *
-	 * @param event_name  事件名称
-	 * @param data_source_name 数据源名
-	 * @param service_name 服务名
-	 * @param bundle_service_name bundle 服务名
-	 * @param bundle_name bundle名
-	 * @param map 参数
-	 * @return 查询结果
-	 * @throws Throwable 可能存在的异常
-	 */
-	public Object callEvent(String event_name, String service_name, String bundle_service_name, String bundle_name, String data_source_name, Map map) throws Throwable;
-
-	/**
-	 * 根据 服务事件名称、数据源名称、服务名、bundle服务名、bundle名 查找事件并执行
-	 * @param event_name  事件名称
-	 * @param data_source_name 数据源名
-	 * @param service_name 服务名
-	 * @param bundle_service_name bundle 服务名
-	 * @param bundle_name bundle名
-	 * @param map 参数
-	 * @param callBack 回调对象
-	 * @return 查询结果
-	 * @throws Throwable 可能存在的异常
-	 */
-	public Object callEvent(String event_name, String service_name, String bundle_service_name, String bundle_name, String data_source_name, Map map, CallBack callBack) throws Throwable;
-
+	public TableModel getEvent(String event_name, String data_type_class);
+	
+	public Map getEventByIDType(String event_id, String data_type_name);
+	
+	public Map getEventByIDName(String event_id, String data_source_name);
+	
+	// /**
+	// * 根据 服务事件名称、数据源名称、服务名、bundle服务名、bundle名 查找事件并执行
+	// *
+	// * @param event_name 事件名称
+	// * @param data_source_name 数据源名
+	// * @param service_name 服务名
+	// * @param bundle_service_name bundle 服务名
+	// * @param bundle_name bundle名
+	// * @param map 参数
+	// * @return 查询结果
+	// * @throws Throwable 可能存在的异常
+	// */
+	// public Object callEvent(String event_name, String service_name, String bundle_service_name, String bundle_name, String data_source_name, Map map);
+	//
+	// /**
+	// * 根据 服务事件名称、数据源名称、服务名、bundle服务名、bundle名 查找事件并执行
+	// * @param event_name 事件名称
+	// * @param data_source_name 数据源名
+	// * @param service_name 服务名
+	// * @param bundle_service_name bundle 服务名
+	// * @param bundle_name bundle名
+	// * @param map 参数
+	// * @param callBack 回调对象
+	// * @return 查询结果
+	// * @throws Throwable 可能存在的异常
+	// */
+	// public Object callEvent(String event_name, String service_name, String bundle_service_name, String bundle_name, String data_source_name, Map map, CallBack callBack);
+	
 	/**
 	 * 调用事件
 	 * @param event_id 事件id
@@ -122,8 +126,8 @@ public interface IResource extends IBMO {
 	 * @return 结果
 	 * @throws Throwable 可能存在的异常
 	 */
-	public Object callEvent(String event_id, String data_source_name, Map map) throws Throwable;
-
+	public <T> T callEvent(String event_id, String data_source_name, Map map);
+	
 	/**
 	 * 调用事件
 	 * @param event_id 时间id
@@ -133,10 +137,10 @@ public interface IResource extends IBMO {
 	 * @return 结果
 	 * @throws Throwable 可能存在的异常
 	 */
-	public Object callEvent(String event_id, String data_source_name, Map map, CallBack callBack) throws Throwable;
-
+	public <T> T callEvent(String event_id, String data_source_name, Map map, CallBack callBack);
+	
 	/**
-	 * 转换事件
+	 * 执行事件
 	 * @param event 事件信息
 	 * @param data_source_name 数据源名称
 	 * @param map 参数
@@ -144,22 +148,15 @@ public interface IResource extends IBMO {
 	 * @return 返回结果
 	 * @throws Throwable 可能存在的异常
 	 */
-	public Object convertCallEvent(Map event, String data_source_name, Map map,CallBack callBack)throws Throwable;
-	/**
-	 * 调用事件
-	 * @param event_map 事件信息
-	 * @param data_source_name 数据源名
-	 * @param callBack 回调
-	 * @return 返回结果
-	 * @throws Throwable 可能存在的异常
-	 */
-	public Object callEvent(Map event_map, String data_source_name, Map data, CallBack callBack) throws Throwable;
-
-	public boolean registerEventFilter(String requestEvent, EventFilter eventFilter,int index);
+	public <T> T executeEvent(Map event, String data_source_name, Map data, CallBack callBack);
+	
+	public boolean registerEventFilter(String requestEvent, EventFilter eventFilter, int index);
+	
 	public void unregisterEventFilter(String requestEvent);
-
-	public boolean registerEventResultFilter(String requestEvent, EventResultFilter eventResultFilter,int index);
+	
+	public boolean registerEventResultFilter(String requestEvent, EventResultFilter eventResultFilter, int index);
+	
 	public void unregisterEventResultFilter(String requestEvent);
-
+	
 	public void unregisterAllEventFilter();
 }

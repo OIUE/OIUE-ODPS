@@ -2,8 +2,11 @@ package org.oiue.service.odp.objpool;
 
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,6 +16,8 @@ import org.oiue.service.odp.dmo.IDMO;
 import org.oiue.service.odp.dmo.IDMO_DB;
 import org.oiue.service.odp.dmo.p.IJDBC_DMO;
 import org.oiue.tools.Reflection;
+import org.oiue.tools.StatusResult;
+import org.oiue.tools.exception.OIUEException;
 import org.oiue.tools.string.StringUtil;
 
 /**
@@ -23,33 +28,32 @@ import org.oiue.tools.string.StringUtil;
  */
 @SuppressWarnings({ "unused", "unchecked", "rawtypes" })
 public class ObjectPools {
-
+	
 	private static ObjectPools op = new ObjectPools();
-
+	
 	private ProxyDBSource proxyDBSource = null;
-
+	
 	public ProxyDBSource getDs() {
 		return proxyDBSource;
 	}
-
+	
 	public void setDs(ProxyDBSource ds) {
 		this.proxyDBSource = ds;
 	}
-
+	
 	/**
 	 * 存储持久层对象map映射 2011-1-13 增加对多连接的支持
 	 */
 	private Map<String, Map<String, IDMO>> dmoByDBType = new ConcurrentHashMap<>();
 	private Map<String, Map<String, IDMO>> dmoByName = new ConcurrentHashMap<>();
-
+	
 	private Map<String, IDMO_DB> idmo_dbs = new ConcurrentHashMap<>();
-
+	
 	/**
 	 * 初始化对象池
 	 */
-	private ObjectPools() {
-	}
-
+	private ObjectPools() {}
+	
 	/**
 	 * 获取对象池工厂
 	 *
@@ -58,42 +62,37 @@ public class ObjectPools {
 	public static ObjectPools getInstance() {
 		return op;
 	}
-
+	
 	/**
 	 * 注册DB操作对象ODB
 	 *
-	 * @param DBType
-	 *            数据库类型
-	 * @param idmo
-	 *            持久化对象
+	 * @param DBType 数据库类型
+	 * @param idmo 持久化对象
 	 * @return 注册结果
 	 */
 	public boolean registerDMODB(String DBType, IDMO_DB idmo) {
 		if (StringUtil.isEmptys(DBType) || idmo == null)
 			return false;
-
+		
 		if (idmo_dbs.containsKey(DBType)) {
 			throw new RuntimeException("Duplicate registration![" + DBType + "]");
 		}
 		idmo_dbs.put(DBType, idmo);
 		return true;
 	}
-
+	
 	/**
 	 * 注册DMO
 	 *
-	 * @param DBType
-	 *            数据库类型
-	 * @param name
-	 *            名称
-	 * @param idmo
-	 *            持久化对象
+	 * @param DBType 数据库类型
+	 * @param name 名称
+	 * @param idmo 持久化对象
 	 * @return 注册结果
 	 */
 	public boolean registerDMO(String DBType, String name, IDMO idmo) {
 		if (StringUtil.isEmptys(DBType) || StringUtil.isEmptys(name) || idmo == null)
 			return false;
-
+		
 		Map dmoM = dmoByDBType.get(DBType);
 		if (dmoM == null) {
 			dmoM = new Hashtable<String, IDMO>();
@@ -103,28 +102,27 @@ public class ObjectPools {
 			throw new RuntimeException("Duplicate registration![" + DBType + "," + name + "]");
 		}
 		dmoM.put(name, idmo);
-
+		
 		Map dmoN = dmoByName.get(name);
 		if (dmoN == null) {
 			dmoN = new Hashtable<String, IDMO>();
 			dmoByName.put(name, dmoN);
 		}
 		dmoN.put(DBType, idmo);
-
 		return true;
 	}
-
+	
 	public boolean registerDMOForce(String DBType, String name, IDMO idmo) {
 		if (StringUtil.isEmptys(DBType) || StringUtil.isEmptys(name) || idmo == null)
 			return false;
-
+		
 		Map dmoM = dmoByDBType.get(DBType);
 		if (dmoM == null) {
 			dmoM = new Hashtable<String, IDMO>();
 			dmoByDBType.put(DBType, dmoM);
 		}
 		dmoM.put(name, idmo);
-
+		
 		Map dmoN = dmoByName.get(name);
 		if (dmoN == null) {
 			dmoM = new Hashtable<String, IDMO>();
@@ -134,26 +132,26 @@ public class ObjectPools {
 
 		return true;
 	}
-
+	
 	public boolean unRegisterDmo(String name, String DBType) {
 		if (StringUtil.isEmptys(DBType) || StringUtil.isEmptys(name))
 			return false;
-
+		
 		Map dmoM = dmoByDBType.get(DBType);
 		if (dmoM != null)
 			dmoM.remove(name);
-
+		
 		Map dmoN = dmoByName.get(name);
 		if (dmoN != null)
 			dmoN.remove(DBType);
-
+		
 		return true;
 	}
-
+	
 	public boolean unRegisterDmo(String name) {
 		if (StringUtil.isEmptys(name))
 			return false;
-
+		
 		Map dmoN = dmoByName.get(name);
 		for (Iterator iterator = dmoN.keySet().iterator(); iterator.hasNext();) {
 			String DBType = (String) iterator.next();
@@ -164,44 +162,106 @@ public class ObjectPools {
 		dmoByName.remove(name);
 		return true;
 	}
-
+	
 	/**
 	 * 获取持久接口
 	 *
-	 * @param name
-	 *            名称
-	 * @param connName
-	 *            连接名称
-	 * @param bmoUniqueIdentifier
-	 *            标识
-	 * @param o
-	 *            初始化参数集合
+	 * @param name 名称
+	 * @param connName 连接名称
+	 * @param processKey 标识
+	 * @param o 初始化参数集合
 	 * @return 初始化完成的持久化对象
 	 */
-	public <T> T getIDMOByConn(String name, String connName, String bmoUniqueIdentifier, Object... o) {
-		try {
-			Connection conn = this.getBmoConn().get(bmoUniqueIdentifier).get(connName);
-			String data_type_class = this.getData_source_class(connName);
-			T idmo = this.getIDMO(name, data_type_class, o);
-			((IJDBC_DMO) idmo).setConn(conn);
-			return idmo;
-		} catch (Throwable e) {
-			if (e instanceof RuntimeException) {
-				throw (RuntimeException) e;
+	public <T> T getIDMOByConn(String name, String connName, String processKey, Object... o) {
+		Map<String, Connection> connMap = this.getBmoConn().get(processKey);
+		if (connMap == null) {
+			connMap = new HashMap<>();
+			this.getBmoConn().put(processKey, connMap);
+		}
+		Connection conn = connMap.get(connName);
+		if (conn == null) {
+			conn = this.getDs().getConn(connName); // 根据连接名称获取对应连接
+			try {
+				conn.setAutoCommit(false);// 设置开启事务
+			} catch (SQLException e) {
+				try {
+					conn.close();
+				} catch (SQLException es) {
+					throw new OIUEException(StatusResult._conn_error, "connection [" + connName + "] can not set auto commit and can not close.", es);
+				}
+				throw new OIUEException(StatusResult._conn_error, "connection [" + connName + "] can not set auto commit.", e);
 			}
-			throw new RuntimeException("持久层" + name + "找不到！" + e.getMessage(), e);
+			connMap.put(connName, conn);
+		}
+		String data_type_class = this.getData_source_class(connName);
+		T idmo = this.getIDMO(name, data_type_class, o);
+		((IJDBC_DMO) idmo).setConn(conn);
+		
+		return idmo;
+	}
+	
+	public void Commit(String processKey) throws SQLException {
+		Map<String, Connection> connMap = this.getBmoConn().get(processKey);
+		Connection conn = null;
+		if(connMap==null)
+			return;
+		for (String _dbName : connMap.keySet()) {
+			conn = connMap.get(_dbName);
+			if (conn != null) {
+				conn.commit();
+			}
+		}
+		for (String _dbName : connMap.keySet()) {
+			conn = connMap.get(_dbName);
+			if (conn != null) {
+				conn.close();
+			}
+		}
+		connMap.clear();
+	}
+	
+	public void Rollback(String processKey) throws SQLException {
+		Map<String, Connection> connMap = this.getBmoConn().get(processKey);
+		// 业务方法执行完成后关闭连接
+		int cmd = 0;
+		String dbName = null;
+		Connection conn = null;
+		while (true) {
+			if (connMap == null)
+				break;
+			if (connMap != null && connMap.size() > 0)
+				for (Iterator<String> iterator = connMap.keySet().iterator(); iterator.hasNext();) {
+					dbName = iterator.next();
+					conn = connMap.get(dbName);
+					if (conn != null) {
+						conn.rollback();
+						conn.close();
+						iterator.remove();
+					} else {
+						iterator.remove();
+					}
+				}
+			if (cmd >= ProxyDBSource.DEFAULT_CONN_CLOSENUM || connMap.size() == 0)
+				break;
+			try {
+				Thread.sleep(20);
+			} catch (Throwable e) {}
+			cmd++;
+		}
+		dbName = null;
+		conn = null;
+		if (connMap != null) {
+			connMap.clear();
+			connMap = null;
 		}
 	}
-
+	
 	/**
 	 * 获取持久接口
 	 *
-	 * @param name
-	 *            名称
-	 * @param data_type_class
-	 *            数据库分类类型
-	 * @param o
-	 *            初始化参数
+	 * @param name 名称
+	 * @param data_type_class 数据库分类类型
+	 * @param o 初始化参数
 	 * @return 初始化完成的持久化对象
 	 */
 	public <T> T getIDMO(String name, String data_type_class, Object... o) {
@@ -228,46 +288,67 @@ public class ObjectPools {
 			throw new RuntimeException("持久层" + name + "找不到！DBType：" + data_type_class + "。" + e.getMessage(), e);
 		}
 	}
-
+	
 	/**
 	 * 业务方法与连接
 	 */
 	private Map<String, BmoConfig> bmo = new ConcurrentHashMap<String, BmoConfig>();
-
+	
 	public Map<String, BmoConfig> getBmo() {
 		return bmo;
 	}
-
+	
 	public void setBmo(Map<String, BmoConfig> bmo) {
 		this.bmo = bmo;
 	}
-
+	
 	public boolean registerBMO(String name, BmoConfig bmoc) {
 		if (bmo.get(name) != null)
 			return false;
+		
+		Map map = bmoc.getMethod();
+		for (Iterator iterator = map.values().iterator(); iterator.hasNext();) {
+			List<String> connList = (List<String>) iterator.next();
+			for (Iterator iterator2 = connList.iterator(); iterator2.hasNext();) {
+				String connName = (String) iterator2.next();
+				if (this.getData_source_class(connName) != null) {
+					Connection conn = null;
+					try {
+						conn = this.getDs().getConn(connName);
+						this.getData_source_class().put(connName, this.getData_source_class(conn));
+					} catch (Throwable e) {
+						throw new RuntimeException(e);
+					} finally {
+						if (conn != null)
+							try {
+								conn.close();
+							} catch (SQLException e) {}
+						conn = null;
+					}
+					
+				}
+			}
+		}
 		bmo.put(name, bmoc);
 		return true;
 	}
-
+	
 	/**
 	 * 获取配置属性对象
 	 *
-	 * @param name
-	 *            配置对象名称
+	 * @param name 配置对象名称
 	 * @return 配置属性对象
 	 */
 	public BmoConfig getBmoConfig(String name) {
 		return getBmo().get(name);
 	}
-
+	
 	/**
 	 *
 	 * 获取业务接口
 	 *
-	 * @param name
-	 *            名称
-	 * @param o
-	 *            初始化参数
+	 * @param name 名称
+	 * @param o 初始化参数
 	 * @return T 业务对象
 	 */
 	public <T> T getIBMO(String name, Object... o) {
@@ -278,55 +359,65 @@ public class ObjectPools {
 			throw new RuntimeException("业务层" + name + "找不到！" + e.getMessage(), e);
 		}
 	}
-
+	
 	public Map<String, Map<String, IDMO>> getDmoByDBType() {
 		return dmoByDBType;
 	}
-
+	
 	public void setDmoByDBType(Map<String, Map<String, IDMO>> dmoByDBType) {
 		this.dmoByDBType = dmoByDBType;
 	}
-
+	
 	public Map<String, Map<String, IDMO>> getDmoByName() {
 		return dmoByName;
 	}
-
+	
 	public void setDmoByName(Map<String, Map<String, IDMO>> dmoByName) {
 		this.dmoByName = dmoByName;
 	}
-
+	
 	/**
 	 * 存储业务层对象对应的数据库连接
 	 */
 	private Map<String, Map<String, Connection>> bmoConn = new ConcurrentHashMap<String, Map<String, Connection>>();
-
+	
 	public Map<String, Map<String, Connection>> getBmoConn() {
 		return bmoConn;
 	}
-
+	
 	public void setBmoConn(Map<String, Map<String, Connection>> bmoConn) {
 		this.bmoConn = bmoConn;
 	}
-
+	
 	/**
 	 * 数据源分类
 	 */
 	private Map<String, String> data_source_class = new ConcurrentHashMap<String, String>();
-
+	
 	public String getData_source_class(String connName) {
 		String data_type = this.data_source_class.get(connName);
-		if (data_type == null)
+		if (data_type == null) {
+			
+			Connection conn = null;
 			try {
-				Connection conn = proxyDBSource.getConn(connName);
+				conn = proxyDBSource.getConn(connName);
 				data_type = this.getData_source_class(conn);
 				this.data_source_class.put(connName, data_type);
 			} catch (Throwable e) {
 				throw new RuntimeException(e);
+			} finally {
+				if (conn != null)
+					try {
+						conn.close();
+					} catch (SQLException e) {
+						throw new OIUEException(StatusResult._conn_error, e.getMessage(), e);
+					}
 			}
-
+		}
+		
 		return data_type;
 	}
-
+	
 	public String getData_source_class(Connection conn) {
 		String data_type = null;
 		try {
@@ -337,11 +428,11 @@ public class ObjectPools {
 		}
 		return data_type;
 	}
-
+	
 	public Map<String, String> getData_source_class() {
 		return data_source_class;
 	}
-
+	
 	public void setData_source_class(Map<String, String> data_source_class) {
 		if (data_source_class.size() == 0) {
 			this.data_source_class = data_source_class;
@@ -349,5 +440,4 @@ public class ObjectPools {
 			throw new RuntimeException(" data_soutce_class is not null,can't set new value. ");
 		}
 	}
-
 }

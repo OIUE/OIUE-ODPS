@@ -1,15 +1,17 @@
 package org.oiue.service.odp.proxy;
 
 import java.lang.reflect.Proxy;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.oiue.service.log.LogService;
 import org.oiue.service.log.Logger;
 import org.oiue.service.odp.bmo.IBMO;
 import org.oiue.service.odp.dmo.IDMO;
 import org.oiue.service.odp.objpool.ObjectPools;
+import org.oiue.service.system.analyzer.AnalyzerService;
+import org.oiue.service.system.analyzer.TimeLogger;
 import org.oiue.table.structure.TableModel;
+import org.oiue.tools.StatusResult;
+import org.oiue.tools.exception.OIUEException;
 
 /**
  * 代理工厂 解决事务等
@@ -17,106 +19,49 @@ import org.oiue.table.structure.TableModel;
  * @author Every(王勤) E-mail/MSN:mwgjkf@hotmail.com QQ:30130942
  * @version ProxyFactory.java Apr 27, 2010
  */
-@SuppressWarnings({ "rawtypes" })
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ProxyFactory {
 	private static ProxyFactory proxyFactory = new ProxyFactory();
-
+	
 	private LogService logService;
-	@SuppressWarnings("unused")
-	private Logger logger;
-
-	public void setLogService(LogService logService) {
+	private AnalyzerService analyzer;
+	
+	public void setLogService(LogService logService, AnalyzerService analyzer) {
 		this.logService = logService;
-		logger = logService.getLogger(this.getClass());
+		this.analyzer = analyzer;
 	}
-
-	public Logger getLogger(Class<?> c) throws Throwable {
+	
+	public Logger getLogger(Class<?> c) {
 		return logService.getLogger(c);
 	}
-
+	public LogService getLogService() {
+		return logService;
+	}
+	
+	public TimeLogger getTimeLogger(Class<?> c) {
+		return analyzer.getLogger(c);
+	}
+	
 	/**
 	 * 初始化对象池
 	 */
 	private ObjectPools objectPools = null;
-
+	
 	public ObjectPools getOp() {
 		return objectPools;
 	}
-
+	
 	public void setOp(ObjectPools op) {
 		this.objectPools = op;
 	}
-
-
-	// private Map<String, DataSourceAdmin> dataSourceAdmin = new ConcurrentHashMap<String,
-	// DataSourceAdmin>();
-	//
-	// public boolean registerDataSourceAdmin(String name, DataSourceAdmin dataSourceAdminImpl) {
-	// if (dataSourceAdmin.containsKey(name)) {
-	// throw new RuntimeException("register DataSourceAdmin is error,duplicate registration :" +
-	// name);
-	// }
-	// dataSourceAdmin.put(name, dataSourceAdminImpl);
-	// return true;
-	// }
-	//
-	// public Object getDataSourceByType(String data_type_class, String name) {
-	// Object rtn = null;
-	// List<Throwable> exceptions = null;
-	// for (Iterator iterator = dataSourceAdmin.values().iterator(); iterator.hasNext();) {
-	// DataSourceAdmin dataSourceAdmin = (DataSourceAdmin) iterator.next();
-	// try {
-	// rtn = dataSourceAdmin.getDataSourceByType(data_type_class, name);
-	// if (rtn != null)
-	// break;
-	// } catch (Throwable e) {
-	// if (exceptions == null)
-	// exceptions = new ArrayList<Throwable>();
-	// exceptions.add(e);
-	// }
-	// }
-	// if (rtn == null) {
-	// if (exceptions != null)
-	// throw new RuntimeException(exceptions + "");
-	// }
-	// return rtn;
-	// }
-	//
-	// public Object getDataSourceByConn(String connName, String name) {
-	// return this.getDataSourceByType(this.getData_source_class(connName), name);
-	// }
-	//
-	// public Map<String, DataSourceAdmin> getDataSourceAdmin() {
-	// return dataSourceAdmin;
-	// }
-	//
-	// public void setDataSourceAdmin(Map<String, DataSourceAdmin> dataSourceAdmin) {
-	// if (dataSourceAdmin == null)
-	// this.dataSourceAdmin.clear();
-	// else
-	// this.dataSourceAdmin = dataSourceAdmin;
-	// }
-
-	/**
-	 * 存储调用者的堆引用
-	 */
-	private Map<Integer, LinkedHashMap> bmoStack = new LinkedHashMap<Integer, LinkedHashMap>();
-
-	public Map<Integer, LinkedHashMap> getBmoStack() {
-		return bmoStack;
-	}
-
-	public void setBmoStack(Map<Integer, LinkedHashMap> bmoStack) {
-		this.bmoStack = bmoStack;
-	}
-
+	
 	/**
 	 * 读取配置文件 初始化代理工厂
 	 */
 	private ProxyFactory() {
 		objectPools = ObjectPools.getInstance();
 	}
-
+	
 	/**
 	 * 获取代理工厂
 	 *
@@ -125,10 +70,23 @@ public class ProxyFactory {
 	public static ProxyFactory getInstance() {
 		return proxyFactory;
 	}
-	public static <T> T factorys(String name) throws Throwable {
+	
+	public static <T> T factorys(String name) {
 		return proxyFactory.factory(name, true);
 	}
-
+	
+	public <T> T factorys(String name, String processKey, Object... o) {
+		IBMO ibmo;
+		if (o != null && o.length > 0) {
+			ibmo = this.factory(name, false, o);
+		} else {
+			ibmo = this.factory(name, false);
+		}
+		ibmo.setCallerUID(processKey);
+		ibmo.setCallerRoot(processKey);
+		return (T) ibmo;
+	}
+	
 	/**
 	 * 获取业务操作对象的实例 业务模型对象初始动态代理 根据对象映射中指定的名称获取操作对象的实例 此实例的方法均被代理
 	 *
@@ -140,16 +98,17 @@ public class ProxyFactory {
 	 * @return 返回业务对象
 	 * @throws Throwable 异常
 	 */
-	@SuppressWarnings("unchecked")
-	public <T> T factory(String name, boolean main, Object... o) throws Throwable {
-		IBMO object = getOp().getIBMO(name, o);
+	public <T> T factory(String name, boolean main, Object... o) {
+		IBMO ibmo = getOp().getIBMO(name, o);
 		if (main) {
-			Class cls = object.getClass();
-			object = (IBMO) Proxy.newProxyInstance(cls.getClassLoader(), cls.getInterfaces(), new BmoProxy(object, name));
+			Class cls = ibmo.getClass();
+			ibmo = (IBMO) Proxy.newProxyInstance(cls.getClassLoader(), cls.getInterfaces(), new BmoProxy(ibmo, name));
 		}
-		return (T) object;
+		if (ibmo == null)
+			throw new OIUEException(StatusResult._service_init_error, "service can not init！");
+		return (T) ibmo;
 	}
-
+	
 	/**
 	 * 获取持久层操作对象 持久层对象初始动态代理 根据对象映射中指定的名称获取操作对象实例 此实例所有方法均被代理
 	 *
@@ -164,7 +123,7 @@ public class ProxyFactory {
 		Class cls = object.getClass();
 		return (T) Proxy.newProxyInstance(cls.getClassLoader(), cls.getInterfaces(), new DmoProxy(object, bmoUniqueIdentifier, o));
 	}
-
+	
 	/**
 	 * 获取持久层操作对象 此方法将代理简单的数据操作提交 持久层对象初始动态代理 根据对象映射中指定的名称获取操作对象实例 此实例所有方法均被代理 此方法同时代理操作查询数据
 	 *

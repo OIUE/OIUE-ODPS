@@ -1,5 +1,7 @@
 package org.oiue.service.odp.dmo;
 
+import java.io.IOException;
+
 /**
  * 用户定义针对各数据库个性化接口
  *
@@ -8,5 +10,8 @@ package org.oiue.service.odp.dmo;
  */
 public interface IDMO extends IDMO_DB {
 	void setIdmo(IDMO_DB idmo);
-	Object deepCopy() throws Throwable;
+	
+	IDMO_DB getIdmo();
+	
+	Object deepCopy() throws ClassNotFoundException, IOException;
 }

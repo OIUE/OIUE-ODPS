@@ -10,17 +10,17 @@
 	<parent>
 		<groupId>org.oiue.services.odps</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0.1</version>
+		<version>1.1.0-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.oiue.services.odps</groupId>
-			<artifactId>org.oiue.service.odp.structure</artifactId>
+			<groupId>org.oiue.services.odps.events</groupId>
+			<artifactId>org.oiue.service.odp.event.sql.structure</artifactId>
 			<version>${odp.structure.version}</version>
 		</dependency>
 	</dependencies>
 	<properties>
-		<!-- <project.activator>${artifactId}.Activator</project.activator> -->
+		<!-- <project.activator>${project.artifactId}.Activator</project.activator> -->
 	</properties>
 </project>

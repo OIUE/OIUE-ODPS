@@ -15,6 +15,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -24,12 +25,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.oiue.service.log.Logger;
 import org.oiue.service.odp.dmo.BlobType;
 import org.oiue.service.odp.dmo.ClobType;
+import org.oiue.service.odp.proxy.ProxyFactory;
 import org.oiue.tools.StatusResult;
+import org.oiue.tools.exception.OIUEException;
 import org.oiue.tools.json.JSONUtil;
 
-@SuppressWarnings({ "rawtypes", "serial" })
+@SuppressWarnings({ "rawtypes", "serial", "unchecked" })
 public abstract class JDBC_DMO implements IJDBC_DMO {
 	protected Connection conn;
 	protected PreparedStatement pstmt;
@@ -38,89 +42,114 @@ public abstract class JDBC_DMO implements IJDBC_DMO {
 	protected ResultSet rs;
 	protected Statement stmt;
 
+	protected ProxyFactory pf = ProxyFactory.getInstance();
+	protected Logger log = pf.getLogger(this.getClass());
+	
 	@Override
 	public Connection getConn() {
+		if (conn == null)
+			throw new RuntimeException("cann is null!");
 		return conn;
 	}
-
+	
 	@Override
 	public void setConn(Connection conn) {
 		this.conn = conn;
 	}
-
+	
 	@Override
 	public ResultSet getRs() {
 		return rs;
 	}
-
+	
 	@Override
 	public PreparedStatement getPstmt() {
 		return pstmt;
 	}
-
+	
+	@Override
+	public void setPstmt(PreparedStatement pstmt) {
+		this.pstmt = pstmt;
+	}
+	
 	@Override
 	public CallableStatement getStmt() {
 		return cstmt;
 	}
-
+	
 	@Override
-	public StatusResult execute(String sql,Collection queryParams){
+	public StatusResult execute(String sql, Collection queryParams) {
 		StatusResult sr = new StatusResult();
 		try {
-			if (this.getRs()!=null) {
+			if (this.getRs() != null) {
 				this.getRs().close();
 			}
 			sql = sql.trim();
-			if(sql.toLowerCase().startsWith("call")){
-				this.cstmt=this.getConn().prepareCall(sql);
+			if (sql.toLowerCase().startsWith("call")) {
+				this.cstmt = this.getConn().prepareCall(sql);
 				this.cstmt.setFetchSize(50);
-				int i=1;
-				if(queryParams!=null)
+				int i = 1;
+				if (queryParams != null)
 					for (Iterator iterator = queryParams.iterator(); iterator.hasNext();) {
-						cstmt.setObject(i++ , iterator.next());
+						cstmt.setObject(i++, iterator.next());
 					}
 				cstmt.execute();
-			}else if(sql.toLowerCase().startsWith("insert")||sql.toLowerCase().startsWith("update")||sql.toLowerCase().startsWith("delete")){
-				this.pstmt = this.getConn().prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+			} else if (sql.toLowerCase().startsWith("insert") || sql.toLowerCase().startsWith("update") || sql.toLowerCase().startsWith("delete")) {
+				this.pstmt = this.getConn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 				this.setQueryParams(queryParams);
 				this.pstmt.setFetchSize(50);
 				Map data = new HashMap<>();
 				data.put("count", this.getPstmt().executeUpdate());
-				ResultSet generatedKeys =  this.getPstmt().getGeneratedKeys();
-				if(generatedKeys!=null)
+				ResultSet generatedKeys = this.getPstmt().getGeneratedKeys();
+				if (generatedKeys != null)
 					try {
 						data.put("root", getResult(generatedKeys));
 					} finally {
-						if(generatedKeys!=null)
+						if (generatedKeys != null)
 							generatedKeys.close();
-						generatedKeys=null;
+						generatedKeys = null;
 					}
 				sr.setData(data);
-			}else if(sql.toLowerCase().startsWith("select")){
+			} else if (sql.toLowerCase().startsWith("select") || sql.toLowerCase().startsWith("with")) {
 				this.pstmt = this.getConn().prepareStatement(sql);
 				this.setQueryParams(queryParams);
 				this.pstmt.setFetchSize(50);
-				this.rs=this.getPstmt().executeQuery();
-			}else{
-				throw new RuntimeException("sql:"+sql);
+				this.rs = this.getPstmt().executeQuery();
+			} else if (sql.toLowerCase().startsWith("create") || sql.toLowerCase().startsWith("alter")) {
+				this.pstmt = this.getConn().prepareStatement(sql);
+				this.getPstmt().execute();
+			} else {
+				throw new RuntimeException("sql:" + sql);
 			}
+		} catch (OIUEException e) {
+			throw e;
+		} catch (SQLException e) {
+			Map per = new HashMap<>();
+			per.put("errorcode", e.getErrorCode());
+			per.put("sqlstate", e.getSQLState());
+			per.put("sql", sql);
+			per.put("queryParams", queryParams);
+			log.error("per:"+per+"\t"+e.getMessage(), e);
+			throw new OIUEException(StatusResult._sql_error, per, e);
 		} catch (Throwable e) {
-			throw new RuntimeException("sql:"+sql+",queryParams:"+queryParams, e);
+			Map per = new HashMap<>();
+			per.put("sql", sql);
+			per.put("queryParams", queryParams);
+			log.error("per:"+per+"\t"+e.getMessage(), e);
+			throw new OIUEException(StatusResult._data_error, per, e);
 		}
-
+		
 		return sr;
 	}
+	
 	/**
 	 * 参JDBCUtil实现 设置prepared的参数
 	 *
-	 * @param column
-	 *            参数的标号
-	 * @param obj
-	 *            Object obj是参数值
-	 * @throws SQLException
-	 *             sql异常
+	 * @param column 参数的标号
+	 * @param obj Object obj是参数值
+	 * @throws SQLException sql异常
 	 */
-	public void setParameter( int column, Object obj) throws java.sql.SQLException {
+	public void setParameter(int column, Object obj) {
 		try {
 			if (obj instanceof java.lang.String) {
 				String keyStrs = (String) obj;
@@ -150,89 +179,100 @@ public abstract class JDBC_DMO implements IJDBC_DMO {
 				pstmt.setString(column, JSONUtil.parserToStr((Map) obj));
 			} else if (obj instanceof List) {
 				pstmt.setString(column, JSONUtil.parserToStr((List) obj));
+			} else if (obj == null) {
+//				pstmt.setString(column, null);
+				pstmt.setNull(column, Types.NULL);
 			} else {// if(obj instanceof Boolean)
 				pstmt.setObject(column, obj);
 			}
 			// else logger.error("不支持的参数类型!");
-
+			
 		} catch (Exception e) {
-			throw new RuntimeException("参数设置出错[" + column + "," + obj + "]：" + e);
+			throw new OIUEException(StatusResult._blocking_errors, "参数设置出错[" + column + "," + obj + "]：" + e, e);
 		}
 	}
-
+	
 	@Override
-	public List<Map> getResult(ResultSet rs) throws SQLException{
-		ResultSetMetaData rsmd = rs.getMetaData();
-		List<Map> listMap = new ArrayList<Map>();
-		while(rs.next()){
+	public List<Map> getResult(ResultSet rs) {
+		try {
+			ResultSetMetaData rsmd = rs.getMetaData();
+			List<Map> listMap = new ArrayList<Map>();
+			while (rs.next()) {
+				int sum = rsmd.getColumnCount();
+				Hashtable row = new Hashtable();
+				for (int i = 1; i < sum + 1; i++) {
+					Object value = rs.getObject(i);
+					if ((value instanceof BigDecimal)) {
+						if (((BigDecimal) value).scale() == 0) {
+							value = Long.valueOf(((BigDecimal) value).longValue());
+						} else {
+							value = Double.valueOf(((BigDecimal) value).doubleValue());
+						}
+					} else if ((value instanceof Clob)) {
+						value = clobToString((Clob) value);
+					}
+					// String key = rsmd.getColumnName(i);
+					String key = rsmd.getColumnLabel(i);
+					row.put(key, value == null ? "" : value);
+				}
+				listMap.add(row);
+			}
+			return listMap;
+			
+		} catch (Exception e) {
+			throw new OIUEException(StatusResult._blocking_errors, "", e);
+		}
+	}
+	
+	@Override
+	public Map getMapResult(ResultSet rs) {
+		try {
+			ResultSetMetaData rsmd = rs.getMetaData();
 			int sum = rsmd.getColumnCount();
 			Hashtable row = new Hashtable();
 			for (int i = 1; i < sum + 1; i++) {
 				Object value = rs.getObject(i);
 				if ((value instanceof BigDecimal)) {
-					if (((BigDecimal)value).scale() == 0) {
-						value = Long.valueOf(((BigDecimal)value).longValue());
+					if (((BigDecimal) value).scale() == 0) {
+						value = Long.valueOf(((BigDecimal) value).longValue());
 					} else {
-						value = Double.valueOf(((BigDecimal)value).doubleValue());
+						value = Double.valueOf(((BigDecimal) value).doubleValue());
 					}
 				} else if ((value instanceof Clob)) {
-					value = clobToString((Clob)value);
+					value = clobToString((Clob) value);
 				}
-				//			String key = rsmd.getColumnName(i);
+				// String key = rsmd.getColumnName(i);
 				String key = rsmd.getColumnLabel(i);
 				row.put(key, value == null ? "" : value);
 			}
-			listMap.add(row);
+			return row;
+		} catch (Exception e) {
+			throw new OIUEException(StatusResult._blocking_errors, "", e);
 		}
-		return listMap;
 	}
-
-	@Override
-	public Map getMapResult(ResultSet rs) throws SQLException{
-		ResultSetMetaData rsmd = rs.getMetaData();
-		int sum = rsmd.getColumnCount();
-		Hashtable row = new Hashtable();
-		for (int i = 1; i < sum + 1; i++) {
-			Object value = rs.getObject(i);
-			if ((value instanceof BigDecimal)) {
-				if (((BigDecimal)value).scale() == 0) {
-					value = Long.valueOf(((BigDecimal)value).longValue());
-				} else {
-					value = Double.valueOf(((BigDecimal)value).doubleValue());
-				}
-			} else if ((value instanceof Clob)) {
-				value = clobToString((Clob)value);
-			}
-			//			String key = rsmd.getColumnName(i);
-			String key = rsmd.getColumnLabel(i);
-			row.put(key, value == null ? "" : value);
-		}
-		return row;
-	}
-
+	
 	protected String clobToString(Clob clob) {
 		if (clob == null) {
 			return null;
 		}
 		try {
 			Reader inStreamDoc = clob.getCharacterStream();
-			char[] tempDoc = new char[(int)clob.length()];
+			char[] tempDoc = new char[(int) clob.length()];
 			inStreamDoc.read(tempDoc);
 			inStreamDoc.close();
 			return new String(tempDoc);
 		} catch (IOException | SQLException e) {
-			throw new RuntimeException(e);
+			throw new OIUEException(StatusResult._blocking_errors, "", e);
 		}
 	}
+	
 	/**
 	 * 根据参数值queryParams集合
 	 *
-	 * @param queryParams
-	 *            查询参数集合
-	 * @throws Exception
-	 *             异常
+	 * @param queryParams 查询参数集合 @ 异常
 	 */
-	public void setQueryParams(Collection queryParams) throws Exception {
+	@Override
+	public void setQueryParams(Collection queryParams) {
 		if ((queryParams == null) || (queryParams.isEmpty())) {
 			return;
 		}
@@ -244,7 +284,7 @@ public abstract class JDBC_DMO implements IJDBC_DMO {
 			i++;
 		}
 	}
-
+	
 	@Override
 	public boolean close() {
 		try {
@@ -253,14 +293,14 @@ public abstract class JDBC_DMO implements IJDBC_DMO {
 					if (rs.getStatement() != null)
 						rs.getStatement().close();
 				} catch (Exception e2) {
-					e2.printStackTrace();
+					log.error(e2.getMessage(), e2);
 				}
 				try {
 					if (rs != null)
 						rs.close();
 					rs = null;
 				} catch (Exception e2) {
-					e2.printStackTrace();
+					log.error(e2.getMessage(), e2);
 				}
 			}
 			if (cstmt != null) {
@@ -279,5 +319,5 @@ public abstract class JDBC_DMO implements IJDBC_DMO {
 		}
 		return false;
 	}
-
+	
 }

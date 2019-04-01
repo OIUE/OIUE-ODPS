@@ -5,6 +5,7 @@
 package org.oiue.service.odp.proxy;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.oiue.service.odp.dmo.IDMO;
@@ -22,11 +23,11 @@ public class DmoProxy implements InvocationHandler {
 	private String bmoUniqueIdentifier;
 	private Object[] o;
 	private boolean proxyDBCMD = false;
-
+	
 	public DmoProxy() {}
-
+	
 	ProxyFactory pf = ProxyFactory.getInstance();
-
+	
 	/**
 	 * 持久层代理方法
 	 *
@@ -39,7 +40,7 @@ public class DmoProxy implements InvocationHandler {
 		this.bmoUniqueIdentifier = bmoUniqueIdentifier;
 		this.o = o;
 	}
-
+	
 	/**
 	 * 持久层代理方法
 	 *
@@ -55,46 +56,31 @@ public class DmoProxy implements InvocationHandler {
 		this.bmoUniqueIdentifier = bmoUniqueIdentifier;
 		this.o = o;
 	}
-
+	
 	/*
 	 * (non-Javadoc) 暂只实现同一种数据库，未实现同时对多种类型数据库的支持，将在后期补充
 	 *
-	 * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object, java.lang.reflect.Method,
-	 * java.lang.Object[])
+	 * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])
 	 */
 	@Override
-	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		Object o = null;
+	public Object invoke(Object proxy, Method method, Object[] args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		try {
-			o = method.invoke(object, args);// 调用真实对象的代理方法
+			return method.invoke(object, args);// 调用真实对象的代理方法
 		} finally {
 			if (object instanceof IJDBC_DMO) {
 				IJDBC_DMO jdbc = object;
 				// 如果返回对象为空
 				while (true) {
 					try {
-						if(jdbc.close())
+						if (jdbc.close())
 							break;
-					} catch (Throwable t) {
-						t.printStackTrace();
-					}
+					} catch (Throwable t) {}
 					try {
-						Thread.sleep(30);// System.out.println("等待关闭连接资源。。。");
-					} catch (Throwable e) {
-						e.printStackTrace();
-					}
+						Thread.sleep(5);
+					} catch (Throwable e) {}
 				}
 			}
 		}
-		// System.out.println("dmo_调用真实对象之后。。。。。");
-		// if (method.getReturnType().toString().equals("booblean")) {
-		// o=false;
-		// }else if
-		// (method.getReturnType().getSimpleName().toString().equals("tableModel"))
-		// {
-		//
-		// }
-		return o;
 	}
-
+	
 }

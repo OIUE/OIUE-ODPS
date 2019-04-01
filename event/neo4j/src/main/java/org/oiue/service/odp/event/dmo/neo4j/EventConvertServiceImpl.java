@@ -10,19 +10,18 @@ import org.oiue.service.odp.event.api.EventConvertService;
 @SuppressWarnings("serial")
 public class EventConvertServiceImpl extends DMO implements EventConvertService {
 	@Override
-	public List<Map<?, ?>> convert(Map<?, ?> event, Map<String, Object> data) throws Throwable {
+	public List<Map<?, ?>> convert(Map<?, ?> event, Map<String, Object> data) {
 		return null;
 	}
-
+	
 	@Override
-	public Map<?, ?> query(Map<?, ?> event_query) throws Throwable {
+	public Map<?, ?> query(Map<?, ?> event_query) {
 		return null;
 	}
-
+	
 	@Override
 	public IDMO clone() throws CloneNotSupportedException {
-		// TODO Auto-generated method stub
 		return new EventConvertServiceImpl();
 	}
-
+	
 }

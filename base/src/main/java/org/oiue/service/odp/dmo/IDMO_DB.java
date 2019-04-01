@@ -1,4 +1,5 @@
 package org.oiue.service.odp.dmo;
+
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import org.oiue.tools.sql.SQL;
 @SuppressWarnings("rawtypes")
 public interface IDMO_DB extends IDMO_ROOT {
 	IDMO_DB clone() throws CloneNotSupportedException;
+	
 	/**
 	 * 获取分页sql语句
 	 *
@@ -22,6 +24,7 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 * @return 可执行sql对象
 	 */
 	public SQL getCutPageSQL(String sql, TableModel tm);
+	
 	/**
 	 * 获取分页数据总行数
 	 *
@@ -30,7 +33,7 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 * @return 可执行sql对象
 	 */
 	public SQL getRowCountSQL(String sql, TableModel rm);
-
+	
 	/**
 	 * 获取对象的插入语句
 	 *
@@ -38,8 +41,8 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 * @return 可执行sql对象
 	 * @throws Throwable 异常
 	 */
-	public SQL getInsertSql(TableModel tm) throws Throwable;
-
+	public SQL getInsertSql(TableModel tm);
+	
 	/**
 	 * 获取对象的插入语句
 	 *
@@ -48,7 +51,7 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 * @return 可执行sql对象
 	 */
 	public SQL getInsertSql(Map dm, String tableName);
-
+	
 	/**
 	 * 获取对象的修改语句
 	 *
@@ -56,8 +59,8 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 * @return 可执行sql对象
 	 * @throws Throwable 异常
 	 */
-	public SQL getUpdateSql(TableModel tm) throws Throwable;
-
+	public SQL getUpdateSql(TableModel tm);
+	
 	/**
 	 * 获取对象操作删除语句
 	 *
@@ -65,8 +68,8 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 * @return 可执行sql对象
 	 * @throws Throwable 异常
 	 */
-	public SQL getDelSql(TableModel tm) throws Throwable;
-
+	public SQL getDelSql(TableModel tm);
+	
 	/**
 	 * 获取对象查询语句
 	 *
@@ -74,8 +77,8 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 * @return 可执行sql对象
 	 * @throws Throwable 异常
 	 */
-	public SQL getQuerySql(TableModel tm) throws Throwable;
-
+	public SQL getQuerySql(TableModel tm);
+	
 	/**
 	 * 获取对象查询语句
 	 *
@@ -84,8 +87,8 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 * @return 可执行sql对象
 	 * @throws Throwable 异常
 	 */
-	public SQL getQuerySql(TableModel tm, String scope) throws Throwable;
-
+	public SQL getQuerySql(TableModel tm, String scope);
+	
 	/**
 	 * 通过反射 将字段属性替换到Sql语句中(注意大小写)
 	 *
@@ -94,54 +97,49 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 * @return 可执行sql对象
 	 */
 	public SQL AnalyzeSql(String sourceStr, TableModel tb);
-
+	
 	/**
 	 * 根据操作对象实现插入及修改
 	 *
-	 * @param tm TableModel
-	 *            抽象出来的表格对象
+	 * @param tm TableModel 抽象出来的表格对象
 	 * @return 更新结果
 	 * @throws Throwable 异常
 	 */
-	public boolean Update(TableModel tm) throws Throwable;
-
+	public boolean Update(TableModel tm);
+	
 	/**
 	 * 根据操作对象实现插入及修改
 	 *
-	 * @param tm TableModels
-	 *            抽象出来的表格对象
+	 * @param tm TableModels 抽象出来的表格对象
 	 * @return 更新结果
 	 * @throws Throwable 异常
 	 */
-	public boolean Update(List<TableModel> tm) throws Throwable;
-
+	public boolean Update(List<TableModel> tm);
+	
 	/**
 	 * 根据操作对象实现Tree插入及修改
 	 *
-	 * @param tm tablemodel
-	 *            抽象出来的表格对象
+	 * @param tm tablemodel 抽象出来的表格对象
 	 * @return 更新结果
 	 * @throws Throwable 异常
 	 */
-	public boolean UpdateTree(TableModel tm) throws Throwable;
-
+	public boolean UpdateTree(TableModel tm);
+	
 	/**
 	 * 根据操作对象部分属性获取对象集合
 	 *
-	 * @param tm TableModel
-	 *            抽象出来的表格对象
+	 * @param tm TableModel 抽象出来的表格对象
 	 * @return 查询结果
 	 * @throws Throwable 异常
 	 */
-	public List Query(TableModel tm) throws Throwable;
-
+	public List Query(TableModel tm);
+	
 	/**
 	 * 根据操作对象部分属性获取对象
 	 *
-	 * @param tm TableModel
-	 *            抽象出来的表格对象
+	 * @param tm TableModel 抽象出来的表格对象
 	 * @return 查询结果
 	 * @throws Throwable 异常
 	 */
-	public TableModel QueryObj(TableModel tm) throws Throwable;
+	public TableModel QueryObj(TableModel tm);
 }
