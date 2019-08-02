@@ -90,33 +90,15 @@ public interface IResource extends IBMO {
 	
 	public Map getEventByIDName(String event_id, String data_source_name);
 	
-	// /**
-	// * 根据 服务事件名称、数据源名称、服务名、bundle服务名、bundle名 查找事件并执行
-	// *
-	// * @param event_name 事件名称
-	// * @param data_source_name 数据源名
-	// * @param service_name 服务名
-	// * @param bundle_service_name bundle 服务名
-	// * @param bundle_name bundle名
-	// * @param map 参数
-	// * @return 查询结果
-	// * @throws Throwable 可能存在的异常
-	// */
-	// public Object callEvent(String event_name, String service_name, String bundle_service_name, String bundle_name, String data_source_name, Map map);
-	//
-	// /**
-	// * 根据 服务事件名称、数据源名称、服务名、bundle服务名、bundle名 查找事件并执行
-	// * @param event_name 事件名称
-	// * @param data_source_name 数据源名
-	// * @param service_name 服务名
-	// * @param bundle_service_name bundle 服务名
-	// * @param bundle_name bundle名
-	// * @param map 参数
-	// * @param callBack 回调对象
-	// * @return 查询结果
-	// * @throws Throwable 可能存在的异常
-	// */
-	// public Object callEvent(String event_name, String service_name, String bundle_service_name, String bundle_name, String data_source_name, Map map, CallBack callBack);
+	/**
+	 * 构建事件
+	 * @param event_id 事件id
+	 * @param data_source_name 数据源名
+	 * @param map 参数
+	 * @return 结果
+	 * @throws Throwable 可能存在的异常
+	 */
+	public <T> T buildEvent(String event_id, String data_source_name, Map map);
 	
 	/**
 	 * 调用事件

@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import org.oiue.service.odp.dmo.IDMO_DB;
@@ -83,6 +85,47 @@ public class DMO_DB extends DMO_ROOT implements IDMO_DB {
 				row.put(key, value == null ? "" : value);
 			}
 			return row;
+		} catch (Exception e) {
+			throw new OIUEException(StatusResult._blocking_errors, "", e);
+		}
+	}
+	
+	@Override
+	public List<Map> getResult(ResultSet rs) {
+		try {
+			ResultSetMetaData rsmd = rs.getMetaData();
+			List<Map> listMap = new ArrayList<Map>();
+			while (rs.next()) {
+				int sum = rsmd.getColumnCount();
+				Hashtable row = new Hashtable();
+				for (int i = 1; i < sum + 1; i++) {
+					Object value = rs.getObject(i);
+					if ((value instanceof BigDecimal)) {
+						if (((BigDecimal) value).scale() == 0) {
+							value = Long.valueOf(((BigDecimal) value).longValue());
+						} else {
+							value = Double.valueOf(((BigDecimal) value).doubleValue());
+						}
+					} else if (value instanceof PGobject) {
+						if ("json".equals(((PGobject) value).getType())) {
+							value = ((PGobject) value).getValue();
+							if (value.toString().startsWith("{")) {
+								value = JSONUtil.parserStrToMap(value.toString());
+							} else {
+								value = JSONUtil.parserStrToList(value.toString());
+							}
+						}
+					} else if ((value instanceof Clob)) {
+						value = clobToString((Clob) value);
+					}
+					// String key = rsmd.getColumnName(i);
+					String key = rsmd.getColumnLabel(i);
+					row.put(key, value == null ? "" : value);
+				}
+				listMap.add(row);
+			}
+			return listMap;
+			
 		} catch (Exception e) {
 			throw new OIUEException(StatusResult._blocking_errors, "", e);
 		}

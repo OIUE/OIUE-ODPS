@@ -331,15 +331,16 @@ public class StructureServiceManagerImpl implements Serializable, StructureServi
 			String data_type_id = MapUtil.getString(object, "data_type_id", "");
 			Object value = null;
 			switch (data_type_id) {
-				case "postgres_integer":
+				case "int2":
+				case "int4":
 					value = MapUtil.getInt(object, "content");
 					break;
-				case "postgres_bigint":
+				case "int8":
 					value = MapUtil.getLong(object, "content");
 					break;
-				case "postgres_numeric":
-				case "postgres_double_precision":
-				case "postgres_real":
+				case "numeric":
+				case "float4":
+				case "float8":
 					value = MapUtil.getDouble(object, "content");
 					break;
 				

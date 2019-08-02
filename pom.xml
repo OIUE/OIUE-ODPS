@@ -16,26 +16,10 @@
     <module>parent</module>
     <module>res.dmo</module>
     <module>event.api</module>
-    
-<!--     <module>dmo.mysql</module>
-    <module>dmo.postgresql</module>
-    <module>dmo.h2</module>
-    <module>dmo.neo4j</module>
-    <module>event</module> -->
-    
-<!--     <module>res.dmo.mysql</module>
-    
-    <module>res.dmo.postgresql</module>
-    
-    <module>res.dmo.h2</module>
-    
-    <module>res.dmo.neo4j</module> -->
-    
+        
 <!--     <module>mysql</module> -->
     <module>postgresql</module>
     
-<!--     <module>structure</module>
-    <module>structure.impl</module> -->
     <module>event.sql.structure</module>
     <module>event.sql.structure.impl</module>
     <module>structure.api</module>

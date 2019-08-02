@@ -31,7 +31,7 @@
 			org.oiue.service.odp.bmo,
 			org.oiue.service.odp.dmo,
 			org.oiue.service.odp.bmo.p,
-			org.oiue.service.odp.dmo.p,
+			org.oiue.service.odp.dmo.p,org.oiue.service.odp.proxy,
 			org.oiue.service.odp.objpool</project.export>
 	</properties>
 	<dependencies>

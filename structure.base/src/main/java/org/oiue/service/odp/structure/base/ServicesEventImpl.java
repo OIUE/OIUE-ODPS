@@ -83,6 +83,10 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 		String allFieldstr = ListUtil.ListJoin(allFields, ",");
 		String allPkFieldstr = ListUtil.ListJoin(allPkFields, ",");
 		String allPkFieldstrv = ListUtil.ListJoin(allPkFields, "= ? ,") + "=? ";
+		String query_se_id = UUID.randomUUID().toString().replaceAll("-", "");
+		String insert_se_id = UUID.randomUUID().toString().replaceAll("-", "");
+		String update_se_id = UUID.randomUUID().toString().replaceAll("-", "");
+		String delete_se_id = UUID.randomUUID().toString().replaceAll("-", "");
 		
 		// service_id ,name ,description ,type ,content ,expression,user_id
 		Map selectMap = new HashMap<>();
@@ -96,12 +100,13 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 		selectMap.put("content", MapUtil.getString(data, "query", "select " + allFieldstr + " from " + table_name));
 		iresource = this.getIBMO(IResource.class.getName());
 		Map selecto = iresource.callEvent("fm_system_add_services_event", data_source_name, selectMap);// insert service event query
+		query_se_id= MapUtil.getString(selecto,"service_event_id");
 		
 		// service_event_parameters_id,entity_id,service_event_id
 		Map eventEntity = new HashMap<>();
-		eventEntity.put("service_event_parameters_id", selecto.get("service_event_id"));
+		eventEntity.put("service_event_parameters_id",query_se_id);
 		eventEntity.put("entity_id", entity_id);
-		eventEntity.put("service_event_id", selecto.get("service_event_id"));
+		eventEntity.put("service_event_id", query_se_id);
 		eventEntity.put("operation_type", "query");
 		eventEntity.put("entity_type", "system_ds");
 		iresource = this.getIBMO(IResource.class.getName());
@@ -118,9 +123,10 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 		insertMap.put("expression", MapUtil.getString(data, "expression_insert", allFieldstr.replace(","+_system_colnum, "").replace(_system_colnum+",", "")).replace("\"", ""));
 		iresource = this.getIBMO(IResource.class.getName());
 		Map inserto = iresource.callEvent("fm_system_add_services_event", data_source_name, insertMap);// insert service event insert
+		insert_se_id = MapUtil.getString(inserto,"service_event_id");
 		
-		eventEntity.put("service_event_parameters_id", inserto.get("service_event_id"));
-		eventEntity.put("service_event_id", inserto.get("service_event_id"));
+		eventEntity.put("service_event_parameters_id", insert_se_id);
+		eventEntity.put("service_event_id", insert_se_id);
 		eventEntity.put("operation_type", "insert");
 		iresource = this.getIBMO(IResource.class.getName());
 		iresource.callEvent("38b6c070-0133-470f-ad60-7344b31a1f34", data_source_name, eventEntity);// insert service event entity
@@ -301,19 +307,19 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 		String data_source_name = null;
 		
 		iresource = this.getIBMO(IResource.class.getName());
-		if (!data.containsKey("entity_column_id"))
-			data.put("entity_column_id", MapUtil.getString(data, "x"));
-		Object entity = iresource.callEvent("fa8f9b71-34ca-4d40-8b74-a03cf4c1f3d5", data_source_name, data);// insert service event query
-		if (entity == null || !(entity instanceof Map)) {
-			throw new RuntimeException();
-		}
-		Map rentity = (Map) entity;
-		String entity_id = MapUtil.getString(rentity, "entity_id");
-		String table_name = MapUtil.getString(rentity, "tablename");
+//		if (!data.containsKey("entity_column_id"))
+//			data.put("entity_column_id", MapUtil.getString(data, "x"));
+//		Object entity = iresource.callEvent("fa8f9b71-34ca-4d40-8b74-a03cf4c1f3d5", data_source_name, data);// insert service event query
+//		if (entity == null || !(entity instanceof Map)) {
+//			throw new RuntimeException();
+//		}
+//		Map rentity = (Map) entity;
+		String entity_id = MapUtil.getString(data, "entity_id");
+		String table_name = MapUtil.getString(data, "table_name");
 		String user_id = MapUtil.getString(data, "user_id");
 		
 		iresource = this.getIBMO(IResource.class.getName());
-		List<Map> fields = (List<Map>) iresource.callEvent("c51a1f14-0d47-4a64-b476-2fb1286b4d2a", data_source_name, rentity);// insert service event query
+		List<Map> fields = (List<Map>) iresource.callEvent("c51a1f14-0d47-4a64-b476-2fb1286b4d2a", data_source_name, data);// insert service event query
 		List<String> allInsertFields = new ArrayList<>();
 		List<String> allPkFields = new ArrayList<>();
 		List<String> otherFields = new ArrayList<>();
@@ -322,25 +328,20 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 		
 		List<String> geoFields = new ArrayList<>();
 		for (Map field : fields) {
-			String name = MapUtil.getString(field, "name");
-			String data_type_id = MapUtil.getString(field, "data_type_id");
+			String name = MapUtil.getString(field, "column_name");
+			String data_type = MapUtil.getString(field, "data_type");
 			allInsertFields.add(name);
-			if ("postgres_point".equals(data_type_id) || "postgres_line".equals(data_type_id) || "postgres_polygon".equals(data_type_id) || "postgres_geom".equals(data_type_id)) {
+			if ("POINT".equals(data_type) || "LINESTRING".equals(data_type) || "POLYGON".equals(data_type) || "GEOMETRY".equals(data_type)) {
 				insertValues.add("ST_SetSRID(st_geomfromgeojson(?),4326)");
 				// allSelectFields.add("st_asgeojson(" + name + ") as " + name);
 				insertExpression.add(name);
-			} else if(_system_colnum.equals(name)){
+				geoFields.add(name);
+			} else if(_system_colnum.equals(name)||MapUtil.getInt(field, "primary_key") == 1){
 				insertValues.add("uuid_generate_v4()");
+				allPkFields.add(name);
 			}else {
 				insertValues.add("?");
 				insertExpression.add(name);
-			}
-			
-			if (MapUtil.getInt(field, "primary_key") == 1) {
-				allPkFields.add(name);
-			} else if ("postgres_point".equals(data_type_id) || "postgres_line".equals(data_type_id) || "postgres_polygon".equals(data_type_id) || "postgres_geom".equals(data_type_id)) {
-				geoFields.add(name);
-			} else {
 				otherFields.add(name);
 			}
 		}
@@ -738,4 +739,6 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 		_event.put("event_type", MapUtil.getString(data, "type"));
 		return iresource.executeEvent(t_event, null, data, null);
 	}
+	
+	
 }

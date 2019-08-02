@@ -48,7 +48,7 @@ public abstract class JDBC_DMO implements IJDBC_DMO {
 	@Override
 	public Connection getConn() {
 		if (conn == null)
-			throw new RuntimeException("cann is null!");
+			throw new RuntimeException("conn is null!");
 		return conn;
 	}
 	

@@ -1,5 +1,6 @@
 package org.oiue.service.odp.res.base;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -171,6 +172,7 @@ public class ResourceImpl extends BMO implements IResource {
 			data_source_name = default_data_source_name;
 		String eventId = data_source_name + "%" + event_id;
 		Map eventMap = (Map) cacheService.get("_system_event_", eventId);
+		logger.debug("getEventByIDName:{} {}", eventId,eventMap);
 		if (eventMap == null || !openCache) {
 			EventConvertService eventConvertService = (EventConvertService) this.getIDMO(EventConvertService.class.getName(), data_source_name);
 			Map<String, Object> event_query = new HashMap<>();
@@ -189,6 +191,14 @@ public class ResourceImpl extends BMO implements IResource {
 	public <T> T callEvent(String event_id, String data_source_name, Map map) {
 		return this.callEvent(event_id, data_source_name, map, null);
 	}
+
+	public <T> T buildEvent(String event_id, String data_source_name, Map map) {
+		Map eventMap = this.getEventByIDName(event_id, data_source_name);
+		String query_data_source_name = MapUtil.getString(map, "data_source_name");
+		List events = new ArrayList();
+		return (T) events;
+	}
+	
 	
 	@Override
 	public <T> T callEvent(String event_id, String data_source_name, Map map, CallBack callBack) {
@@ -269,7 +279,7 @@ public class ResourceImpl extends BMO implements IResource {
 				rtnObject = callEvent(event, data_source_name, map, callBack);
 				
 				// -----------------------after filter start-------------------------------------
-				logger.debug("event eventRPoolFilter :{}", afterEventFilter);
+				logger.debug("event eventRPoolFilter :{} rtnObject：{}", afterEventFilter,rtnObject);
 				
 				startbfTime = System.currentTimeMillis();
 				for (EventResultFilter afilter : afterEventFilter.values()) {
@@ -323,6 +333,7 @@ public class ResourceImpl extends BMO implements IResource {
 		return rtnObject;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private final <T> T callEvent(Map event_map, String data_source_name, Map data, CallBack callBack) {
 		List<Map> events = null;
 		String eventsstr = (String) MapUtil.getVauleMatchCase(event_map, "EVENTS");

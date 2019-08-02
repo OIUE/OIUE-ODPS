@@ -16,7 +16,7 @@
     <module>parent</module>
     
     <module>postgresql</module>
-    <module>postgresql.q</module>
+    <module>postgresql.process</module>
     <module>postgresql.query</module>
     <module>postgresql.select</module>
     <module>postgresql.selects</module>

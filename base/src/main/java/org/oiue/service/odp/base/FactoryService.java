@@ -8,6 +8,7 @@ import org.oiue.service.odp.bmo.IBMO;
 import org.oiue.service.odp.dmo.IDMO;
 import org.oiue.service.odp.dmo.IDMO_DB;
 import org.oiue.service.odp.objpool.BmoConfig;
+import org.oiue.service.odp.proxy.ProxyFactory;
 
 /**
  * @author Every(王勤) E-mail/MSN:mwgjkf@hotmail.com QQ:30130942
@@ -50,4 +51,5 @@ public interface FactoryService extends Serializable {
 	
 	public void RollbackByProcess(String processKey) throws SQLException;
 	
+	public ProxyFactory getProxyFactory();
 }

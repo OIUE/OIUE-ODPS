@@ -109,5 +109,11 @@ public class FactoryServiceImpl implements FactoryService {
 	public void putData_source_class(String connName, String DBType) {
 		proxyFactory.getOp().getData_source_class().put(connName, DBType);
 	}
+
+	@Override
+	public ProxyFactory getProxyFactory() {
+		return proxyFactory;
+	}
+	
 	
 }
