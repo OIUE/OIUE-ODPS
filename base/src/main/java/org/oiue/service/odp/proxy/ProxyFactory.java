@@ -90,13 +90,10 @@ public class ProxyFactory {
 	/**
 	 * 获取业务操作对象的实例 业务模型对象初始动态代理 根据对象映射中指定的名称获取操作对象的实例 此实例的方法均被代理
 	 *
-	 * @param <T>
-	 *
 	 * @param name 调用的对象映射名称
 	 * @param main 是否是主要的方法 对于展现层调用，则是主要方法，对于业务层调用，则不是主要方法
 	 * @param o 初始参数
 	 * @return 返回业务对象
-	 * @throws Throwable 异常
 	 */
 	public <T> T factory(String name, boolean main, Object... o) {
 		IBMO ibmo = getOp().getIBMO(name, o);
@@ -128,6 +125,7 @@ public class ProxyFactory {
 	 * 获取持久层操作对象 此方法将代理简单的数据操作提交 持久层对象初始动态代理 根据对象映射中指定的名称获取操作对象实例 此实例所有方法均被代理 此方法同时代理操作查询数据
 	 *
 	 * @param name 名称
+	 * @param connName 连接名称
 	 * @param tModel 返回对象
 	 * @param bmoUniqueIdentifier 主业务实体类的唯一标识 此值用于唯一定位到jvm中的业务对象实体
 	 * @param o 初始化参数

@@ -18,7 +18,6 @@ public interface ProxyDBSource extends Serializable {
 	 * 
 	 * @param dbName 数据源名称
 	 * @return 连接
-	 * @throws Throwable 连接异常
 	 */
 	public Connection getConn(String dbName);
 }

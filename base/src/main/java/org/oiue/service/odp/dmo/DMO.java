@@ -118,8 +118,8 @@ public abstract class DMO implements IDMO {
 	
 	/**
 	 * Method 复制对象
-	 * @throws IOException
-	 * @throws ClassNotFoundException
+	 * @throws IOException io异常
+	 * @throws ClassNotFoundException 类文件无法找到
 	 */
 	@Override
 	public Object deepCopy() throws ClassNotFoundException, IOException {

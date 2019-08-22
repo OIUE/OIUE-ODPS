@@ -37,7 +37,7 @@ public class BlobType implements Serializable {
 	 * @param obj Object
 	 * @param index int @ 设置异常
 	 * @author 孙天策
-	 * @throws SQLException
+	 * @throws SQLException 抛出sql异常
 	 */
 	public void set(PreparedStatement st, Object obj, int index) throws SQLException {
 		if (obj == null) {

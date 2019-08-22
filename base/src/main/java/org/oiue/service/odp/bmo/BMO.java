@@ -121,7 +121,6 @@ public class BMO implements IBMO {
 	 * @param name 名称
 	 * @param o 参数集合
 	 * @return 业务层对象
-	 * @throws Throwable 异常
 	 */
 	public <T> T getIBMO(String name, Object... o) {
 		T ibmo;

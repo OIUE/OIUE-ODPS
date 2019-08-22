@@ -39,7 +39,6 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 *
 	 * @param tm 对象
 	 * @return 可执行sql对象
-	 * @throws Throwable 异常
 	 */
 	public SQL getInsertSql(TableModel tm);
 	
@@ -57,7 +56,6 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 *
 	 * @param tm 对象
 	 * @return 可执行sql对象
-	 * @throws Throwable 异常
 	 */
 	public SQL getUpdateSql(TableModel tm);
 	
@@ -66,7 +64,6 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 *
 	 * @param tm 对象
 	 * @return 可执行sql对象
-	 * @throws Throwable 异常
 	 */
 	public SQL getDelSql(TableModel tm);
 	
@@ -75,7 +72,6 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 *
 	 * @param tm 对象
 	 * @return 可执行sql对象
-	 * @throws Throwable 异常
 	 */
 	public SQL getQuerySql(TableModel tm);
 	
@@ -85,7 +81,6 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 * @param tm 对象
 	 * @param scope 范围
 	 * @return 可执行sql对象
-	 * @throws Throwable 异常
 	 */
 	public SQL getQuerySql(TableModel tm, String scope);
 	
@@ -103,7 +98,6 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 *
 	 * @param tm TableModel 抽象出来的表格对象
 	 * @return 更新结果
-	 * @throws Throwable 异常
 	 */
 	public boolean Update(TableModel tm);
 	
@@ -112,7 +106,6 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 *
 	 * @param tm TableModels 抽象出来的表格对象
 	 * @return 更新结果
-	 * @throws Throwable 异常
 	 */
 	public boolean Update(List<TableModel> tm);
 	
@@ -121,7 +114,6 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 *
 	 * @param tm tablemodel 抽象出来的表格对象
 	 * @return 更新结果
-	 * @throws Throwable 异常
 	 */
 	public boolean UpdateTree(TableModel tm);
 	
@@ -130,7 +122,6 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 *
 	 * @param tm TableModel 抽象出来的表格对象
 	 * @return 查询结果
-	 * @throws Throwable 异常
 	 */
 	public List Query(TableModel tm);
 	
@@ -139,7 +130,6 @@ public interface IDMO_DB extends IDMO_ROOT {
 	 *
 	 * @param tm TableModel 抽象出来的表格对象
 	 * @return 查询结果
-	 * @throws Throwable 异常
 	 */
 	public TableModel QueryObj(TableModel tm);
 }

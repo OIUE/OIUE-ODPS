@@ -61,7 +61,6 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 	 *
 	 * @param tm 对象
 	 * @return 可执行sql对象
-	 * @throws Throwable 异常
 	 */
 	public SQL getInsertSql(TableModel tm) {
 		StringBuffer s = new StringBuffer();
@@ -132,7 +131,6 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 	 *
 	 * @param tm 对象
 	 * @return 可执行sql对象
-	 * @throws Throwable 异常
 	 */
 	public SQL getUpdateSql(TableModel tm) {
 		StringBuffer s = new StringBuffer();
@@ -173,7 +171,6 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 	 *
 	 * @param tm 对象
 	 * @return 可执行sql对象
-	 * @throws Throwable 异常
 	 */
 	public SQL getDelSql(TableModel tm) {
 		StringBuffer s = new StringBuffer();
@@ -198,7 +195,6 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 	 *
 	 * @param tm 对象
 	 * @return 可执行sql对象
-	 * @throws Throwable 异常
 	 */
 	public SQL getQuerySql(TableModel tm) {
 		StringBuffer s = new StringBuffer();
@@ -261,7 +257,6 @@ public abstract class DMO_ROOT extends JDBC_DMO implements IDMO_ROOT {
 	 * @param tm 对象
 	 * @param scope 范围
 	 * @return 可执行sql对象
-	 * @throws Throwable 查询异常
 	 */
 	public SQL getQuerySql(TableModel tm, String scope) {
 		StringBuffer s = new StringBuffer();

@@ -17,7 +17,6 @@ public interface IResource extends IBMO {
 	 *
 	 * @param name 表名
 	 * @return 是否定义
-	 * @throws Throwable 可能存在的异常
 	 */
 	public boolean haveTable(String name);
 	
@@ -26,7 +25,6 @@ public interface IResource extends IBMO {
 	 *
 	 * @param dt 新表 数据库中已存在的表
 	 * @return 修改成功与否
-	 * @throws Throwable 可能存在的异常
 	 */
 	public boolean updateTable(TableExt dt);
 	
@@ -36,7 +34,6 @@ public interface IResource extends IBMO {
 	 * @param dt 新表 数据库中已存在的表
 	 * @param ret 旧表 资源中的表
 	 * @return 修改成功与否
-	 * @throws Throwable 可能存在的异常
 	 */
 	public boolean updateTable(TableExt dt, TableExt ret);
 	
@@ -45,7 +42,6 @@ public interface IResource extends IBMO {
 	 *
 	 * @param tableModel 抽象出来的表格对象
 	 * @return 修改成功与否
-	 * @throws Throwable 可能存在的异常
 	 */
 	public boolean Update(TableModel tableModel);
 	
@@ -54,7 +50,6 @@ public interface IResource extends IBMO {
 	 *
 	 * @param tm 修改对象集
 	 * @return 修改成功与否
-	 * @throws Throwable 可能存在的异常
 	 */
 	public boolean Update(List<TableModel> tm);
 	
@@ -63,7 +58,6 @@ public interface IResource extends IBMO {
 	 *
 	 * @param tableModel 抽象出来的表格对象
 	 * @return 查询结果
-	 * @throws Throwable 可能存在的异常
 	 */
 	public List Query(TableModel tableModel);
 	
@@ -72,7 +66,6 @@ public interface IResource extends IBMO {
 	 *
 	 * @param tableModel 抽象出来的表格对象
 	 * @return 查询结果
-	 * @throws Throwable 可能存在的异常
 	 */
 	public TableModel QueryObj(TableModel tableModel);
 	
@@ -82,7 +75,6 @@ public interface IResource extends IBMO {
 	 * @param event_name 事件名称
 	 * @param data_type_class 数据源类型
 	 * @return 结果
-	 * @throws Throwable 可能存在的异常
 	 */
 	public TableModel getEvent(String event_name, String data_type_class);
 	
@@ -96,7 +88,6 @@ public interface IResource extends IBMO {
 	 * @param data_source_name 数据源名
 	 * @param map 参数
 	 * @return 结果
-	 * @throws Throwable 可能存在的异常
 	 */
 	public <T> T buildEvent(String event_id, String data_source_name, Map map);
 	
@@ -106,7 +97,6 @@ public interface IResource extends IBMO {
 	 * @param data_source_name 数据源名
 	 * @param map 参数
 	 * @return 结果
-	 * @throws Throwable 可能存在的异常
 	 */
 	public <T> T callEvent(String event_id, String data_source_name, Map map);
 	
@@ -117,7 +107,6 @@ public interface IResource extends IBMO {
 	 * @param map 参数
 	 * @param callBack 回调
 	 * @return 结果
-	 * @throws Throwable 可能存在的异常
 	 */
 	public <T> T callEvent(String event_id, String data_source_name, Map map, CallBack callBack);
 	
@@ -125,10 +114,9 @@ public interface IResource extends IBMO {
 	 * 执行事件
 	 * @param event 事件信息
 	 * @param data_source_name 数据源名称
-	 * @param map 参数
+	 * @param data 参数
 	 * @param callBack 回调
 	 * @return 返回结果
-	 * @throws Throwable 可能存在的异常
 	 */
 	public <T> T executeEvent(Map event, String data_source_name, Map data, CallBack callBack);
 	

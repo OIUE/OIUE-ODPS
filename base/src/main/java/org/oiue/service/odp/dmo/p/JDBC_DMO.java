@@ -147,7 +147,6 @@ public abstract class JDBC_DMO implements IJDBC_DMO {
 	 *
 	 * @param column 参数的标号
 	 * @param obj Object obj是参数值
-	 * @throws SQLException sql异常
 	 */
 	public void setParameter(int column, Object obj) {
 		try {

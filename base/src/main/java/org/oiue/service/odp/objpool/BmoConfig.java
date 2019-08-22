@@ -51,11 +51,10 @@ public class BmoConfig implements Serializable {
 	 * 获取类对象实例（这是一个全新的实例）
 	 * @param o 参数集合
 	 * @return 业务对象
-	 * @throws InvocationTargetException
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
-	 * @throws Throwable 获取失败
+	 * @throws InvocationTargetException  InvocationTargetException
+	 * @throws IllegalArgumentException IllegalArgumentException
+	 * @throws IllegalAccessException IllegalAccessException
+	 * @throws InstantiationException InstantiationException
 	 */
 	public IBMO getClasses(Object... o) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Class newoneClass = bmo.getClass();

@@ -93,7 +93,7 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 		selectMap.put("service_id", "fm_system_service_execute");
 		selectMap.put("user_id", user_id);
 		selectMap.put("name", "execute");
-		selectMap.put("desc", MapUtil.getString(data, "entity_desc", entity_id));
+		selectMap.put("description", MapUtil.getString(data, "entity_desc", entity_id));
 		selectMap.put("type", "query");
 		// selectMap.put("rule", "intelligent");
 		// selectMap.put("expression", MapUtil.getString(data, "expression_query", "{\"conjunction\":\"and\",\"filters\":[]}"));
@@ -116,7 +116,7 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 		insertMap.put("service_id", "fm_system_service_execute");
 		insertMap.put("user_id", user_id);
 		insertMap.put("name", "execute");
-		insertMap.put("desc", MapUtil.getString(data, "entity_desc", entity_id) + "_insert");
+		insertMap.put("description", MapUtil.getString(data, "entity_desc", entity_id) + "_insert");
 		insertMap.put("type", "insert");
 		insertMap.put("rule", "");
 		insertMap.put("content", MapUtil.getString(data, "insert", "insert into " + table_name + "(" + allFieldstr + ") values(" + ListUtil.ListJoin(insertValues, ",") + ")" + " returning *"));
@@ -137,7 +137,7 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 			deleteMap.put("service_id", "fm_system_service_execute");
 			deleteMap.put("user_id", user_id);
 			deleteMap.put("name", "execute");
-			deleteMap.put("desc", MapUtil.getString(data, "entity_desc", entity_id) + "_delete");
+			deleteMap.put("description", MapUtil.getString(data, "entity_desc", entity_id) + "_delete");
 			deleteMap.put("type", "delete");
 			deleteMap.put("rule", "");
 			deleteMap.put("content", MapUtil.getString(data, "delete", "delete from " + table_name + " where " + allPkFieldstrv + " returning *"));
@@ -159,7 +159,7 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 			updateMap.put("service_id", "fm_system_service_execute");
 			updateMap.put("user_id", user_id);
 			updateMap.put("name", "execute");
-			updateMap.put("desc", MapUtil.getString(data, "entity_desc", entity_id) + "_update");
+			updateMap.put("description", MapUtil.getString(data, "entity_desc", entity_id) + "_update");
 			updateMap.put("type", "update");
 			updateMap.put("rule", "");
 			updateMap.put("content", MapUtil.getString(data, "update", "update " + table_name + " set " + ListUtil.ListJoin(otherFields, "= ? ,") + "=?" + " where " + allPkFieldstrv + " returning *"));
@@ -186,7 +186,7 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 			insertConfigMap.put("scale", field.get("scale"));
 			insertConfigMap.put("alias", MapUtil.getString(field, "alias", field.get("entity_column_id") + ""));
 			insertConfigMap.put("entity_column_id", field.get("entity_column_id"));
-			insertConfigMap.put("desc", MapUtil.getString(field, "column_desc", field.get("column_name") + ""));
+			insertConfigMap.put("description", MapUtil.getString(field, "column_desc", field.get("column_name") + ""));
 			insertConfigMap.put("data_type_id", MapUtil.getString(field, "data_type_id", field.get("type") + ""));
 			insertConfigMap.put("sort", sort++);
 			insertConfigMap.put("null_able", field.get("null_able"));
@@ -203,7 +203,7 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 			if (MapUtil.getBoolean(field, "ispk", false)) {
 				if (addOperation) {
 					addOperation = false;
-					insertConfigMap.put("desc", "添加");
+					insertConfigMap.put("description", "添加");
 					insertConfigMap.put("component_instance_id", "fm_lt_operation_insert");
 					insertConfigMap.put("config_type", "operation");
 					insertConfigMap.put("service_event_id", ((Map) inserto).get("service_event_id"));
@@ -212,7 +212,7 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 					iresource.callEvent("e535fb44-4d1a-46f9-907f-9aa931c8502f", data_source_name, insertConfigMap);// insert service event config insert
 					
 					if (!StringUtil.isEmptys(delete_service_event_id)) {
-						insertConfigMap.put("desc", "删除");
+						insertConfigMap.put("description", "删除");
 						insertConfigMap.put("component_instance_id", "fm_lt_operation_delete");
 						insertConfigMap.put("config_type", "operation");
 						insertConfigMap.put("service_event_id", delete_service_event_id);
@@ -222,7 +222,7 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 					}
 					
 					if (!StringUtil.isEmptys(update_service_event_id)) {
-						insertConfigMap.put("desc", "修改");
+						insertConfigMap.put("description", "修改");
 						insertConfigMap.put("component_instance_id", "fm_lt_operation_update");
 						insertConfigMap.put("config_type", "operation");
 						insertConfigMap.put("service_event_id", update_service_event_id);
@@ -235,7 +235,7 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 					insertConfigMap.remove("service_event_parameters_id");
 				}
 				
-				insertConfigMap.put("desc", MapUtil.getString(field, "desc", field.get("name") + ""));
+				insertConfigMap.put("description", MapUtil.getString(field, "description", field.get("name") + ""));
 				insertConfigMap.put("component_instance_id", null);
 				insertConfigMap.put("service_event_id", delete_service_event_id);
 				insertConfigMap.put("config_type", "delete");
@@ -268,7 +268,7 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 		}
 		if (addOperation) {
 			addOperation = false;
-			insertConfigMap.put("desc", "添加");
+			insertConfigMap.put("description", "添加");
 			insertConfigMap.put("component_instance_id", "fm_lt_operation_insert");
 			insertConfigMap.put("config_type", "operation");
 			insertConfigMap.put("service_event_id", ((Map) inserto).get("service_event_id"));
@@ -278,7 +278,7 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 			iresource.callEvent("e535fb44-4d1a-46f9-907f-9aa931c8502f", data_source_name, insertConfigMap);// insert service event config insert
 			
 			if (!StringUtil.isEmptys(delete_service_event_id)) {
-				insertConfigMap.put("desc", "删除");
+				insertConfigMap.put("description", "删除");
 				insertConfigMap.put("component_instance_id", "fm_lt_operation_delete");
 				insertConfigMap.put("config_type", "operation");
 				insertConfigMap.put("service_event_id", delete_service_event_id);
@@ -289,7 +289,7 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 			}
 			
 			if (!StringUtil.isEmptys(update_service_event_id)) {
-				insertConfigMap.put("desc", "修改");
+				insertConfigMap.put("description", "修改");
 				insertConfigMap.put("component_instance_id", "fm_lt_operation_update");
 				insertConfigMap.put("config_type", "operation");
 				insertConfigMap.put("service_event_id", update_service_event_id);
@@ -401,7 +401,7 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 		data.put("service_id", "fm_system_service_execute");
 		// data.put("user_id", user_id);
 		// data.put("name", entity_id + "_select");
-		data.put("desc", MapUtil.getString(data, "entity_desc", entity_id));
+		data.put("description", MapUtil.getString(data, "entity_desc", entity_id));
 		// data.put("description", MapUtil.getString(data, "entity_desc", entity_id));
 		// data.put("type", "query");
 		// data.put("rule", "intelligent");
@@ -430,7 +430,7 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 			insertConfigMap.put("scale", field.get("scale"));
 			insertConfigMap.put("alias", MapUtil.getString(field, "alias", field.get("entity_column_id") + ""));
 			insertConfigMap.put("entity_column_id", field.get("entity_column_id"));
-			insertConfigMap.put("desc", MapUtil.getString(field, "desc", field.get("name") + ""));
+			insertConfigMap.put("description", MapUtil.getString(field, "description", field.get("name") + ""));
 			insertConfigMap.put("data_type_id", MapUtil.getString(field, "data_type_id", field.get("type") + ""));
 			insertConfigMap.put("sort", sort++);
 			insertConfigMap.put("null_able", field.get("null_able"));
@@ -489,7 +489,7 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 					String entity_column_id = MapUtil.getString(cfg, "entity_column_id");
 					String name = MapUtil.getString(cfg, "name");
 					String alias = MapUtil.getString(cfg, "alias");
-					String desc = MapUtil.getString(cfg, "desc");
+					String desc = MapUtil.getString(cfg, "description");
 					String remark = MapUtil.getString(cfg, "remark");
 					String config_type = MapUtil.getString(cfg, "config_type");
 					int status = MapUtil.getInt(cfg, "status", 1);
@@ -544,7 +544,7 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 					String entity_column_id = MapUtil.getString(cfg, "entity_column_id");
 					String name = MapUtil.getString(cfg, "name");
 					String alias = MapUtil.getString(cfg, "alias");
-					String desc = MapUtil.getString(cfg, "desc");
+					String desc = MapUtil.getString(cfg, "description");
 					String remark = MapUtil.getString(cfg, "remark");
 					int status = MapUtil.getInt(cfg, "status", 1);
 					cfg.put("status", status);
@@ -601,7 +601,7 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 					String entity_column_id = MapUtil.getString(cfg, "entity_column_id");
 					String name = MapUtil.getString(cfg, "name");
 					String alias = MapUtil.getString(cfg, "alias");
-					String desc = MapUtil.getString(cfg, "desc");
+					String desc = MapUtil.getString(cfg, "description");
 					String remark = MapUtil.getString(cfg, "remark");
 					String config_type = MapUtil.getString(cfg, "config_type");
 					int status = MapUtil.getInt(cfg, "status", 1);
@@ -664,7 +664,7 @@ public class ServicesEventImpl extends BMO implements IServicesEvent {
 					String entity_column_id = MapUtil.getString(cfg, "entity_column_id");
 					String name = MapUtil.getString(cfg, "name");
 					String alias = MapUtil.getString(cfg, "alias");
-					String desc = MapUtil.getString(cfg, "desc");
+					String desc = MapUtil.getString(cfg, "description");
 					String remark = MapUtil.getString(cfg, "remark");
 					String config_type = MapUtil.getString(cfg, "config_type");
 					int status = MapUtil.getInt(cfg, "status", 1);
